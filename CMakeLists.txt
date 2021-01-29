@@ -1,32 +1,23 @@
 cmake_minimum_required(VERSION 3.1)
 project(Shirts_Engine)
 
+# TODO : 엔진 빌드한 다음 그걸 링크 하게
+
+# Conan setup
+include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
+conan_basic_setup()
+
 # Source files
-set(INCLUDE_DIR  "${CMAKE_CURRENT_SOURCE_DIR}/include")
-set(SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/src")
-set(EXTERN_DIR "${CMAKE_CURRENT_SOURCE_DIR}/extern")
-set(SOURCES "${SOURCE_DIR}/test/main.cpp")
+set(INCLUDE_DIR  "${PROJECT_SOURCE_DIR}/include")
+set(SOURCE_DIR "${PROJECT_SOURCE_DIR}/src")
 
-# Executable definition and properties
-add_executable(${PROJECT_NAME} ${SOURCES})
-target_include_directories(${PROJECT_NAME} PRIVATE "${SRC_DIR}")
-set_property(TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 17)
+set(TEST_TARGET "${PROJECT_NAME}_test")
+set(TEST_INCLUDE_DIR  "${PROJECT_SOURCE_DIR}/test/include")
+set(TEST_SOURCE_DIR "${PROJECT_SOURCE_DIR}/test/src")
+set(TEST_SOURCE "${TEST_SOURCE_DIR}/main.cpp")
 
-# GLFW
-set(GLFW_DIR "${EXTERN_DIR}/glfw")
-set(GLFW_BUILD_EXAMPLES OFF CACHE INTERNAL "Build the GLFW example programs")
-set(GLFW_BUILD_TESTS OFF CACHE INTERNAL "Build the GLFW test programs")
-set(GLFW_BUILD_DOCS OFF CACHE INTERNAL "Build the GLFW documentation")
-set(GLFW_INSTALL OFF CACHE INTERNAL "Generate installation target")
-add_subdirectory("${GLFW_DIR}")
-target_link_libraries(${PROJECT_NAME} "glfw" "${GLFW_LIBRARIES}")
-target_include_directories(${PROJECT_NAME} PRIVATE "${GLFW_DIR}/include")
-target_compile_definitions(${PROJECT_NAME} PRIVATE "GLFW_INCLUDE_NONE")
-
-# glad
-set(GLAD_DIR "${EXTERN_DIR}/glad")
-add_library("glad" "${GLAD_DIR}/src/glad.c")
-message("test :: ${GLAD_DIR}/src/glad.c")
-target_include_directories("glad" PRIVATE "${GLAD_DIR}/include")
-target_include_directories(${PROJECT_NAME} PRIVATE "${GLAD_DIR}/include")
-target_link_libraries(${PROJECT_NAME} "glad" "${CMAKE_DL_LIBS}")
+# Test target
+add_executable(${TEST_TARGET} ${TEST_SOURCE})
+set_property(TARGET ${TEST_TARGET} PROPERTY CXX_STANDARD 20)
+target_include_directories(${TEST_TARGET} PRIVATE "${TEST_INCLUDE_DIR}")
+target_link_libraries(${TEST_TARGET} ${CONAN_LIBS})
