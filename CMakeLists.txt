@@ -3,6 +3,14 @@ project(Shirts_Engine)
 
 # TODO : 엔진 빌드한 다음 그걸 링크 하게
 
+# MSVC 환경에서 LNK 에러 발생해서 추가됨
+if(WIN32)
+	SET( CMAKE_SHARED_LINKER_FLAGS ${CMAKE_SHARED_LINKER_FLAGS} "/NODEFAULTLIBS:MSVCRT" )
+endif()
+
+# 리소스 폴더 복사
+file(COPY "${PROJECT_SOURCE_DIR}/resource" DESTINATION ${CMAKE_BINARY_DIR})
+
 # Conan setup
 include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
 conan_basic_setup()
