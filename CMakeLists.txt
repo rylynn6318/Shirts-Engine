@@ -29,3 +29,5 @@ add_executable(${TEST_TARGET} ${TEST_SOURCE})
 set_property(TARGET ${TEST_TARGET} PROPERTY CXX_STANDARD 20)
 target_include_directories(${TEST_TARGET} PRIVATE "${TEST_INCLUDE_DIR}")
 target_link_libraries(${TEST_TARGET} ${CONAN_LIBS})
+
+include_directories(${INCLUDE_DIR})
