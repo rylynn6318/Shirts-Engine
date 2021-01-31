@@ -4,6 +4,8 @@
 #define STB_IMAGE_IMPLEMENTATION 
 #include "stb_image.h"
 #include <iostream>
+#include "shader/Shader2.h"
+#include "core/test.h"
 
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
@@ -14,7 +16,7 @@ void processInput(GLFWwindow* window)
         glfwSetWindowShouldClose(window, true);
 }
 
-void framebuffer_size_callback(GLFWwindow* window, int width, int height)
+void fframebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
     glViewport(0, 0, width, height);
 }
@@ -36,7 +38,7 @@ int main()
         return -1;
     }
     glfwMakeContextCurrent(window);
-    glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+    glfwSetFramebufferSizeCallback(window, fframebuffer_size_callback);
 
     // glad: load all OpenGL function pointers
     // ---------------------------------------
