@@ -22,12 +22,13 @@ set(SOURCE_DIR "${PROJECT_SOURCE_DIR}/src")
 set(TEST_TARGET "${PROJECT_NAME}_test")
 set(TEST_INCLUDE_DIR  "${PROJECT_SOURCE_DIR}/test/include")
 set(TEST_SOURCE_DIR "${PROJECT_SOURCE_DIR}/test/src")
-set(TEST_SOURCE "${TEST_SOURCE_DIR}/main.cpp")
+set(TEST_SOURCE "${TEST_SOURCE_DIR}/main.cpp" "${TEST_SOURCE_DIR}/core/Game.cpp" )
 
 # Test target
 add_executable(${TEST_TARGET} ${TEST_SOURCE})
 set_property(TARGET ${TEST_TARGET} PROPERTY CXX_STANDARD 20)
 target_include_directories(${TEST_TARGET} PRIVATE "${TEST_INCLUDE_DIR}")
 target_link_libraries(${TEST_TARGET} ${CONAN_LIBS})
+
 
 include_directories(${INCLUDE_DIR})
