@@ -41,7 +41,7 @@ int main()
     }
 
 
-    Shader ourShader("./resource/shaders/4.6.shader.vs", "./resource/shaders/4.6.shader.fs"); // you can name your shader files however you like
+    se::Shader ourShader("./resource/shaders/4.6.shader.vs", "./resource/shaders/4.6.shader.fs"); // you can name your shader files however you like
 
     float vertices[] = {
         // positions         // colors
