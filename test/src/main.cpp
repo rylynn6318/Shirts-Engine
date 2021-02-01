@@ -1,6 +1,6 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
-#include "include/shader/Shader.h"
+#include "shader/Shader.h"
 #include <iostream>
 
 const unsigned int SCR_WIDTH = 800;
