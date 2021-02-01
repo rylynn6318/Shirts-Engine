@@ -40,8 +40,8 @@ int main()
         return -1;
     }
 
-
-    se::Shader ourShader("./resource/shaders/4.6.shader.vs", "./resource/shaders/4.6.shader.fs"); // you can name your shader files however you like
+    se::Shader ourShader;
+    ourShader.loadShader("../resource/shaders/4.6.basic.vert.glsl", "../resource/shaders/4.6.basic.frag.glsl"); // you can name your shader files however you like
 
     float vertices[] = {
         // positions         // colors
@@ -73,7 +73,7 @@ int main()
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        ourShader.use();
+        ourShader.useShader();
         glBindVertexArray(VAO);
         glDrawArrays(GL_TRIANGLES, 0, 3);
 
@@ -83,7 +83,7 @@ int main()
 
     glDeleteVertexArrays(1, &VAO);
     glDeleteBuffers(1, &VBO);
-
+    ourShader.unLoadShader();
     glfwTerminate();
     return 0;
 }
