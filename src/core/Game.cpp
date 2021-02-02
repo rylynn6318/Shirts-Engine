@@ -95,5 +95,14 @@ auto se::Game::processInput(GLFWwindow* window)->void
 		glfwSetWindowShouldClose(window, true);
 }
 
+auto se::Game::terminate()->void
+{
+	delete vao;
+	shader.unLoadShader();
+	glDeleteVertexArrays(1, &vao->VAO);
+	glDeleteBuffers(1, &vao->VBO);
+	glDeleteBuffers(1, &vao->EBO);
+	glfwTerminate();
+}
 
 
