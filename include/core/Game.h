@@ -7,6 +7,7 @@
 
 namespace se
 {
+	//TODO : 메모리 해제는 나중에 구조가 정해지고 나서 바꿔야함
 	class Game
 	{
 	public:
