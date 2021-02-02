@@ -62,7 +62,6 @@ auto se::Shader::loadShader(const std::string& vertPath, const std::string& frag
     // delete the shaders as they're linked into our program now and no longer necessary
     glDeleteShader(vert);
     glDeleteShader(frag);
-
 }
 
 auto se::Shader::unLoadShader()->void

@@ -4,10 +4,14 @@
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
 
-void framebuffer_size_callback(GLFWwindow* window, int width, int height)
+namespace se
 {
-	glViewport(0, 0, width, height);
+	void framebuffer_size_callback(GLFWwindow* window, int width, int height)
+	{
+		glViewport(0, 0, width, height);
+	}
 }
+
 
 se::Game::Game() : window(nullptr)
 {
@@ -17,6 +21,24 @@ se::Game::Game() : window(nullptr)
 se::Game::~Game()
 {
 
+}
+
+void se::Game::load()
+{
+	float vertices[] = {
+		// positions          // colors           // texture coords
+		 0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,//   1.0f, 1.0f, // top right
+		 0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,//   1.0f, 0.0f, // bottom right
+		-0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,//   0.0f, 0.0f, // bottom left
+		-0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,//   0.0f, 1.0f  // top left 
+	};
+	unsigned int indices[] = {
+		0, 1, 3, // first triangle
+		1, 2, 3  // second triangle
+	};
+	//vao = new VertexArray(vertices);
+	vao = new VertexArray(vertices, indices);
+	shader.loadShader("../resource/shaders/4.6.basic.vert.glsl", "../resource/shaders/4.6.basic.frag.glsl");
 }
 
 auto se::Game::init()->bool
@@ -30,9 +52,9 @@ auto se::Game::init()->bool
 	window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "Shirts & Jean", NULL, NULL);
 	if (window == nullptr)
 	{
-		std::cout << "Failed to create GLFW window";
+		std::cout << "Failed to create GLFW window" << std::endl;
 		glfwTerminate();
-		return -1;
+		return false;
 	}
 
 	glfwMakeContextCurrent(window);
@@ -40,7 +62,38 @@ auto se::Game::init()->bool
 
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
 	{
-		std::cout << "Failed to initialize GLAD";
-		return -1;
+		std::cout << "Failed to initialize GLAD" << std::endl;
+		return false;
+	}
+
+	load();
+	shader.useShader();
+	return true;
+}
+
+auto se::Game::run()->void
+{
+	while (!glfwWindowShouldClose(window))
+	{
+		processInput(window);
+
+		//render
+		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+		glClear(GL_COLOR_BUFFER_BIT);
+
+		glBindVertexArray(1);
+		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
+		glfwSwapBuffers(window);
+		glfwPollEvents();
 	}
 }
+
+auto se::Game::processInput(GLFWwindow* window)->void
+{
+	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+		glfwSetWindowShouldClose(window, true);
+}
+
+
+
