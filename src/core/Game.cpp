@@ -23,24 +23,6 @@ se::Game::~Game()
 
 }
 
-void se::Game::load()
-{
-	float vertices[] = {
-		// positions          // colors           // texture coords
-		 0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,//   1.0f, 1.0f, // top right
-		 0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,//   1.0f, 0.0f, // bottom right
-		-0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,//   0.0f, 0.0f, // bottom left
-		-0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,//   0.0f, 1.0f  // top left 
-	};
-	unsigned int indices[] = {
-		0, 1, 3, // first triangle
-		1, 2, 3  // second triangle
-	};
-	//vao = new VertexArray(vertices);
-	vao = new VertexArray(vertices, indices);
-	shader.loadShader("../resource/shaders/4.6.basic.vert.glsl", "../resource/shaders/4.6.basic.frag.glsl");
-}
-
 auto se::Game::init()->bool
 {
 	glfwInit();
@@ -89,11 +71,6 @@ auto se::Game::run()->void
 	}
 }
 
-auto se::Game::processInput(GLFWwindow* window)->void
-{
-	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-		glfwSetWindowShouldClose(window, true);
-}
 
 auto se::Game::terminate()->void
 {
@@ -105,4 +82,27 @@ auto se::Game::terminate()->void
 	glfwTerminate();
 }
 
+auto se::Game::processInput(GLFWwindow* window)->void
+{
+	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+		glfwSetWindowShouldClose(window, true);
+}
+
+void se::Game::load()
+{
+	float vertices[] = {
+		// positions          // colors           // texture coords
+		 0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,//   1.0f, 1.0f, // top right
+		 0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,//   1.0f, 0.0f, // bottom right
+		-0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,//   0.0f, 0.0f, // bottom left
+		-0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,//   0.0f, 1.0f  // top left 
+	};
+	unsigned int indices[] = {
+		0, 1, 3, // first triangle
+		1, 2, 3  // second triangle
+	};
+	//vao = new VertexArray(vertices);
+	vao = new VertexArray(vertices, indices);
+	shader.loadShader("../resource/shaders/4.6.basic.vert.glsl", "../resource/shaders/4.6.basic.frag.glsl");
+}
 

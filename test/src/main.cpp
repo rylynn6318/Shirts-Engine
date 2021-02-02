@@ -1,7 +1,5 @@
 #include <iostream>
-
 #include "core/Game.h"
-
 
 int main()
 {
@@ -10,8 +8,7 @@ int main()
 	{
 		game.run();
 	}
+	game.terminate();
 
-
-	glfwTerminate();
 	return 0;
 }

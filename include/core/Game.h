@@ -22,10 +22,11 @@ namespace se
 
 
 	private:
+		GLFWwindow* window;
 		Shader shader;
 		VertexArray* vao;
+
 		void processInput(GLFWwindow* window);
-		GLFWwindow* window;
 		void load(); //test for load shader, vertex
 		bool isRunning = true;
 	};
