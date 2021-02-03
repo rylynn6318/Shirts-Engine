@@ -22,15 +22,21 @@ bool se::Texture::loadTexture(const char* fileName)
 	// 텍스처 wrapping/filtering 옵션 설정
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
 	//텍스쳐 로드
 	stbi_set_flip_vertically_on_load(true);
 	unsigned char* data = stbi_load(fileName, &width, &height, &channels, 0);
 	int format = GL_RGB;
-	if (channels == 4)
+	if (channels == 3)
+	{
+		format = GL_RGB;
+	}
+	else if (channels == 4)
+	{
 		format = GL_RGBA;
+	}
 	
 	if (data)
 	{
