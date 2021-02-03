@@ -15,7 +15,7 @@ namespace se
 		auto setBool(const std::string& name, bool value) const -> void;
 		auto setInt(const std::string& name, int value) const -> void;
 		auto setFloat(const std::string& name, float value) const -> void;
-
+		GLuint getShaderPrgram() const { return shaderProgram; }
 	private:
 		auto compileShader(const std::string& file)->bool;
 		auto checkCompileErrors(unsigned int shader, const std::string& type) -> void;

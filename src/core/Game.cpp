@@ -1,6 +1,8 @@
 #include "core/Game.h"
 #include <iostream>
-
+#include "glm/glm.hpp"
+#include "glm/gtc/matrix_transform.hpp"
+#include "glm/gtc/type_ptr.hpp"
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
 
@@ -64,6 +66,14 @@ auto se::Game::run()->void
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
 
+
+		glm::mat4 transform = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
+		transform = glm::translate(transform, glm::vec3(0.5f, -0.5f, 0.0f));
+		transform = glm::rotate(transform, (float)glfwGetTime(), glm::vec3(0.0f, 0.0f, 1.0f));
+
+		unsigned int transformLoc = glGetUniformLocation(shader.getShaderPrgram(), "transform");
+		glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(transform));
+
 		glBindVertexArray(1);
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
@@ -106,6 +116,7 @@ void se::Game::load()
 	//vao = new VertexArray(vertices);
 	vao = new VertexArray(vertices, indices);
 	shader.loadShader("../resource/shaders/4.6.texture.vert.glsl", "../resource/shaders/4.6.texture.frag.glsl");
-	texture.loadTexture("../resource/luffy_gunchim.png");
+	texture.loadTexture("../resource/pepe_thumsup.png");
+
 }
 
