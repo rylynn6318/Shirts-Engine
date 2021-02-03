@@ -49,7 +49,8 @@ auto se::Game::init()->bool
 	}
 
 	load();
-	shader.useShader();
+	shader.activeShader();
+	texture.activeTexture();
 	return true;
 }
 
@@ -76,6 +77,7 @@ auto se::Game::terminate()->void
 {
 	delete vao;
 	shader.unLoadShader();
+	texture.unLoadTexture();
 	glDeleteVertexArrays(1, &vao->VAO);
 	glDeleteBuffers(1, &vao->VBO);
 	glDeleteBuffers(1, &vao->EBO);
@@ -92,10 +94,10 @@ void se::Game::load()
 {
 	float vertices[] = {
 		// positions          // colors           // texture coords
-		 0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,//   1.0f, 1.0f, // top right
-		 0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,//   1.0f, 0.0f, // bottom right
-		-0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,//   0.0f, 0.0f, // bottom left
-		-0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,//   0.0f, 1.0f  // top left 
+		 0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f, // top right
+		 0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f, // bottom right
+		-0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f, // bottom left
+		-0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f  // top left 
 	};
 	unsigned int indices[] = {
 		0, 1, 3, // first triangle
@@ -103,6 +105,7 @@ void se::Game::load()
 	};
 	//vao = new VertexArray(vertices);
 	vao = new VertexArray(vertices, indices);
-	shader.loadShader("../resource/shaders/4.6.basic.vert.glsl", "../resource/shaders/4.6.basic.frag.glsl");
+	shader.loadShader("../resource/shaders/4.6.texture.vert.glsl", "../resource/shaders/4.6.texture.frag.glsl");
+	texture.loadTexture("../resource/luffy_gunchim.png");
 }
 

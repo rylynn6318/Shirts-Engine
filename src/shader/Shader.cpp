@@ -69,7 +69,7 @@ auto se::Shader::unLoadShader()->void
     glDeleteProgram(shaderProgram);
 }
 
-auto se::Shader::useShader()->void
+auto se::Shader::activeShader()->void
 {
     glUseProgram(shaderProgram);
 }
@@ -77,13 +77,14 @@ auto se::Shader::useShader()->void
 auto se::Shader::checkCompileErrors(unsigned int shader, const std::string& type) -> void
 {
     GLint success;
-    char infoLog[1024];
+    const unsigned int SIZE = 1024;
+    char infoLog[SIZE];
     if (type != "PROGRAM")
     {
         glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
         if (!success)
         {
-            glGetShaderInfoLog(shader, 1024, NULL, infoLog);
+            glGetShaderInfoLog(shader, SIZE, NULL, infoLog);
             std::cout << "ERROR::SHADER_COMPILATION_ERROR of type: " << type << "\n"
                 << infoLog << "\n -- --------------------------------------------------- -- " << std::endl;
         }
@@ -93,7 +94,7 @@ auto se::Shader::checkCompileErrors(unsigned int shader, const std::string& type
         glGetProgramiv(shader, GL_LINK_STATUS, &success);
         if (!success)
         {
-            glGetProgramInfoLog(shader, 1024, NULL, infoLog);
+            glGetProgramInfoLog(shader, SIZE, NULL, infoLog);
             std::cout << "ERROR::PROGRAM_LINKING_ERROR of type: " << type << "\n"
                 << infoLog << "\n -- --------------------------------------------------- -- " << std::endl;
         }

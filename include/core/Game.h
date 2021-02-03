@@ -3,11 +3,13 @@
 #include <GLFW/glfw3.h>
 #include "shader/Shader.h"
 #include "render/VertexArray.h"
+#include "render/Texture.h"
 
 
 namespace se
 {
-	//TODO : 메모리 해제는 나중에 구조가 정해지고 나서 바꿔야함
+	//TODO : 메모리 해제는 나중에 구조가 정해지고 나서 바꿔야함, 텍스쳐같은건 나중에 컴포넌트로 빼야함
+	
 	class Game
 	{
 	public:
@@ -25,6 +27,7 @@ namespace se
 		GLFWwindow* window;
 		Shader shader;
 		VertexArray* vao;
+		Texture texture;
 
 		void processInput(GLFWwindow* window);
 		void load(); //test for load shader, vertex
