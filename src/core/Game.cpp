@@ -69,10 +69,11 @@ auto se::Game::run()->void
 
 		glm::mat4 transform = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
 		transform = glm::translate(transform, glm::vec3(0.5f, -0.5f, 0.0f));
+		transform = glm::scale(transform, glm::vec3(0.5f, 0.5f, 0.5f));
 		transform = glm::rotate(transform, (float)glfwGetTime(), glm::vec3(0.0f, 0.0f, 1.0f));
 
 		unsigned int transformLoc = glGetUniformLocation(shader.getShaderPrgram(), "transform");
-		glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(transform));
+		glUniformMatrix4fv(transformLoc, 1, GL_TRUE, glm::value_ptr(transform));
 
 		glBindVertexArray(vao->VAO);
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
