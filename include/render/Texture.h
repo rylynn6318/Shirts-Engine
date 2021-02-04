@@ -12,6 +12,7 @@ namespace se
 		bool loadTexture(const char* fileName);
 		void unLoadTexture();
 		void activeTexture();
+		GLuint getTexture() const { return texture; }
 
 	private:
 		GLuint texture;
