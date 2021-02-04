@@ -1,25 +1,27 @@
 #pragma once
 #include <string>
+#include "glad/glad.h" 
 
 namespace se
 {
-    class Shader
-    {
-    public:
-        unsigned int ID;
-        // constructor generates the shader on the fly
-        Shader(const char *vertexPath, const char *fragmentPath);
+	class Shader
+	{
+	public:
+		Shader();
+		~Shader();
+		auto loadShader(const std::string& vertPath, const std::string& fragPath)->void;
+		auto unLoadShader()->void;
+		auto activeShader()->void;
+		auto setBool(const std::string& name, bool value) const -> void;
+		auto setInt(const std::string& name, int value) const -> void;
+		auto setFloat(const std::string& name, float value) const -> void;
+		GLuint getShaderPrgram() const { return shaderProgram; }
+	private:
+		auto compileShader(const std::string& file)->bool;
+		auto checkCompileErrors(unsigned int shader, const std::string& type) -> void;
 
-        // activate the shader
-        auto use() -> void;
-
-        // utility uniform functions
-        auto setBool(const std::string &name, bool value) const -> void;
-        auto setInt(const std::string &name, int value) const -> void;
-        auto setFloat(const std::string &name, float value) const -> void;
-
-    private:
-        // utility function for checking shader compilation/linking errors.
-        auto checkCompileErrors(unsigned int shader, std::string type) -> void;
-    };
-} // namespace se
+		GLuint shaderProgram;
+		GLuint fragmentShader;
+		GLuint vertextShader;
+	};
+}
