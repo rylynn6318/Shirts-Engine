@@ -74,7 +74,7 @@ auto se::Game::run()->void
 		unsigned int transformLoc = glGetUniformLocation(shader.getShaderPrgram(), "transform");
 		glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(transform));
 
-		glBindVertexArray(1);
+		glBindVertexArray(vao->VAO);
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
 		glfwSwapBuffers(window);
