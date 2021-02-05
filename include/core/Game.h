@@ -9,7 +9,7 @@
 namespace se
 {
 	//TODO : 메모리 해제는 나중에 구조가 정해지고 나서 바꿔야함, 텍스쳐같은건 나중에 컴포넌트로 빼야함
-	
+	//TODO : 카메라 분리 생각해야함
 	class Game
 	{
 	public:
