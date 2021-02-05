@@ -4,7 +4,7 @@
 #include "shader/Shader.h"
 #include "render/VertexArray.h"
 #include "render/Texture.h"
-
+#include "render/Camera.h"
 
 namespace se
 {

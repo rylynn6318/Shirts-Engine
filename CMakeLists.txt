@@ -34,6 +34,7 @@ set(ENGINE_SOURCE_FILES
 	"${ENGINE_SOURCE_DIR}/core/Game.cpp"
 	"${ENGINE_SOURCE_DIR}/render/VertexArray.cpp"
 	"${ENGINE_SOURCE_DIR}/render/Texture.cpp"
+	"${ENGINE_SOURCE_DIR}/render/Camera.cpp"
 )
 
 # Engine Target
