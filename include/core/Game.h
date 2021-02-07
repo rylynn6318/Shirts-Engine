@@ -5,6 +5,7 @@
 #include "render/VertexArray.h"
 #include "render/Texture.h"
 #include "render/Camera.h"
+#include "render/Model.h"
 
 namespace se
 {
@@ -28,6 +29,7 @@ namespace se
 		Shader shader;
 		VertexArray* vao;
 		Texture texture;
+		Model* model;
 
 		void processInput(GLFWwindow* window);
 		void load(); //test for load shader, vertex

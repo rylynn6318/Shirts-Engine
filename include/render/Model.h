@@ -10,7 +10,7 @@
 
 namespace se
 {
-	unsigned int TextureFromFile(const char* path, const std::string& directory, bool gamma);
+	//unsigned int TextureFromFile(const char* path, const std::string& directory, bool gamma);
 
 	class Model
 	{
@@ -18,7 +18,7 @@ namespace se
 		Model() = delete;
 		~Model();
 		Model(std::string const& path, bool gamma = false);
-		auto Draw(Shader& shader)->void;
+		auto draw(Shader& shader)->void;
 
 	public:
 		std::vector<Texture> textures_loaded;

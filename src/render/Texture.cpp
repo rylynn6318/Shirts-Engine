@@ -19,29 +19,31 @@ bool se::Texture::loadTexture(const char* fileName)
 	int channels = 0;
 	glGenTextures(1, &texture);
 	glBindTexture(GL_TEXTURE_2D, texture);
-	// 텍스처 wrapping/filtering 옵션 설정
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
 	//텍스쳐 로드
-	stbi_set_flip_vertically_on_load(true);
+	//backpack 같은건 true로해야 돌아가고 나머지는 아님 이유를 알아내야함
+	stbi_set_flip_vertically_on_load(false); 
 	unsigned char* data = stbi_load(fileName, &width, &height, &channels, 0);
-	int format = GL_RGB;
-	if (channels == 3)
-	{
-		format = GL_RGB;
-	}
-	else if (channels == 4)
-	{
-		format = GL_RGBA;
-	}
 	
 	if (data)
 	{
+		GLenum format = GL_RGB;
+		if (channels == 1)
+			format = GL_RED;
+		else if (channels == 3)
+			format = GL_RGB;
+		else if (channels == 4)
+			format = GL_RGBA;
+
+		glBindTexture(GL_TEXTURE_2D, texture);
 		glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
 		glGenerateMipmap(GL_TEXTURE_2D);
+
+		// 텍스처 wrapping/filtering 옵션 설정
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	}
 	else
 	{
