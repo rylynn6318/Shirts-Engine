@@ -1,9 +1,13 @@
 cmake_minimum_required(VERSION 3.1)
+
+set(CMAKE_BUILD_TYPE Release)
+
 project(
 	Shirts_Engine   # Project Name
 	VERSION 0.0.1   # Version
 	LANGUAGES CXX   # Langauge
 )
+
 
 set(CMAKE_CXX_STANDARD 20)
 
@@ -35,6 +39,8 @@ set(ENGINE_SOURCE_FILES
 	"${ENGINE_SOURCE_DIR}/render/VertexArray.cpp"
 	"${ENGINE_SOURCE_DIR}/render/Texture.cpp"
 	"${ENGINE_SOURCE_DIR}/render/Camera.cpp"
+	"${ENGINE_SOURCE_DIR}/render/Mesh.cpp"
+	"${ENGINE_SOURCE_DIR}/render/Model.cpp"
 )
 
 # Engine Target
