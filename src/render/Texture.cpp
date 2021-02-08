@@ -20,8 +20,7 @@ bool se::Texture::loadTexture(const char* fileName)
 	glGenTextures(1, &texture);
 	glBindTexture(GL_TEXTURE_2D, texture);
 
-	//ÅØ½ºÃÄ ·Îµå
-	//backpack °°Àº°Ç true·ÎÇØ¾ß µ¹¾Æ°¡°í ³ª¸ÓÁö´Â ¾Æ´Ô ÀÌÀ¯¸¦ ¾Ë¾Æ³»¾ßÇÔ
+	//backpackì€ ì´ë¶€ë¶„ ë°˜ëŒ€ë¡œ
 	stbi_set_flip_vertically_on_load(false); 
 	unsigned char* data = stbi_load(fileName, &width, &height, &channels, 0);
 	
@@ -39,7 +38,7 @@ bool se::Texture::loadTexture(const char* fileName)
 		glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
 		glGenerateMipmap(GL_TEXTURE_2D);
 
-		// ÅØ½ºÃ³ wrapping/filtering ¿É¼Ç ¼³Á¤
+		// ï¿½Ø½ï¿½Ã³ wrapping/filtering ï¿½É¼ï¿½ ï¿½ï¿½ï¿½ï¿½
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);

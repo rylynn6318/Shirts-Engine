@@ -4,7 +4,7 @@ se::Camera::~Camera()
 {
 
 }
-//º¤ÅÍ 
+ 
 se::Camera::Camera(
 	glm::vec3 position,
 	glm::vec3 up,
@@ -18,7 +18,7 @@ se::Camera::Camera(
 	updateCameraVectors();
 }
 
-//½ºÄ®¶ó
+
 se::Camera::Camera(float posX, float posY, float posZ, float upX, float upY, float upZ, float yaw, float pitch)
 {
 	Position = glm::vec3(posX, posY, posZ);
