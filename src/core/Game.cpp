@@ -36,14 +36,14 @@ namespace se
 		}
 
 		float xoffset = xpos - lastX;
-		float yoffset = lastY - ypos; 
+		float yoffset = lastY - ypos;
 
 		lastX = xpos;
 		lastY = ypos;
 
 		camera.processMouseMovement(xoffset, yoffset);
 	}
-	
+
 	void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 	{
 		camera.processMouseScroll(yoffset);
@@ -92,9 +92,11 @@ auto se::Game::init()->bool
 	load();
 	shader.activeShader();
 	glEnable(GL_DEPTH_TEST);
+	glDepthFunc(GL_LESS); //default
+	glEnable(GL_STENCIL_TEST);
 
 	model = new Model("../resource/model/hitler/hitler.obj");
-	
+
 	return true;
 }
 
@@ -106,7 +108,7 @@ auto se::Game::run()->void
 
 		//render
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
 		glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
 		glm::mat4 view = camera.getViewMatrix();
@@ -131,7 +133,7 @@ auto se::Game::terminate()->void
 {
 	delete vao;
 	shader.unLoadShader();
-	texture.unLoadTexture();
+	//texture.unLoadTexture();
 	glDeleteVertexArrays(1, &vao->VAO);
 	glDeleteBuffers(1, &vao->VBO);
 	glDeleteBuffers(1, &vao->EBO);

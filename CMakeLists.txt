@@ -37,7 +37,7 @@ set(ENGINE_SOURCE_FILES
 	"${ENGINE_SOURCE_DIR}/shader/Shader.cpp" 
 	"${ENGINE_SOURCE_DIR}/core/Game.cpp"
 	"${ENGINE_SOURCE_DIR}/render/VertexArray.cpp"
-	"${ENGINE_SOURCE_DIR}/render/Texture.cpp"
+#	"${ENGINE_SOURCE_DIR}/render/Texture.cpp"
 	"${ENGINE_SOURCE_DIR}/render/Camera.cpp"
 	"${ENGINE_SOURCE_DIR}/render/Mesh.cpp"
 	"${ENGINE_SOURCE_DIR}/render/Model.cpp"

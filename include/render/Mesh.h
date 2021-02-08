@@ -4,7 +4,6 @@
 #include "glad/glad.h"
 #include "glm/glm.hpp"
 #include "shader/Shader.h"
-#include "render/Texture.h"
 
 namespace se
 {
@@ -15,6 +14,13 @@ namespace se
 		glm::vec2 TexCoords;
 		glm::vec3 Tangent;
 		glm::vec3 Bitangent;
+	};
+
+	struct Texture 
+	{
+		unsigned int textureID;
+		std::string type;
+		std::string path;
 	};
 
 	class Mesh
@@ -31,7 +37,11 @@ namespace se
 		std::vector<Texture> textures;
 
 	private:
-		GLuint VAO, VBO, EBO;
+		GLuint VAO;
+		GLuint verticesVBO;
+		GLuint EBO;
+		GLuint bonesVBO;
+
 		auto setUpMesh()->void;
 	};
 }

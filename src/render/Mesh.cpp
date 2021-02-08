@@ -40,7 +40,7 @@ auto se::Mesh::draw(Shader shader)->void
         // now set the sampler to the correct texture unit
         glUniform1i(glGetUniformLocation(shader.getShaderPrgram(), (name + number).c_str()), i);
         // and finally bind the texture
-        glBindTexture(GL_TEXTURE_2D, textures[i].getTexture());
+        glBindTexture(GL_TEXTURE_2D, textures[i].textureID);
     }
 
     // draw mesh
@@ -56,12 +56,12 @@ auto se::Mesh::setUpMesh()->void
 {
     // create buffers/arrays
     glGenVertexArrays(1, &VAO);
-    glGenBuffers(1, &VBO);
+    glGenBuffers(1, &verticesVBO);
     glGenBuffers(1, &EBO);
 
     glBindVertexArray(VAO);
     // load data into vertex buffers
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBindBuffer(GL_ARRAY_BUFFER, verticesVBO);
     // A great thing about structs is that their memory layout is sequential for all its items.
     // The effect is that we can simply pass a pointer to the struct and it translates perfectly to a glm::vec3/2 array which
     // again translates to 3/2 floats which translates to a byte array.

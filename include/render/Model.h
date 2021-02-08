@@ -10,7 +10,7 @@
 
 namespace se
 {
-	//unsigned int TextureFromFile(const char* path, const std::string& directory, bool gamma);
+	unsigned int textureFromFile(const char* path, const std::string& directory, bool gamma);
 
 	class Model
 	{
