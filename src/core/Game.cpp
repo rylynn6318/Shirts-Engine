@@ -95,8 +95,8 @@ auto se::Game::init()->bool
 	glDepthFunc(GL_LESS); //default
 	glEnable(GL_STENCIL_TEST);
 
-	model = new Model("../resource/model/hitler/hitler.obj");
-
+	//model = new Model("../resource/model/hitler/hitler.obj");
+	model.loadStaticModel("../resource/model/hitler/hitler.obj");
 	return true;
 }
 
@@ -110,18 +110,18 @@ auto se::Game::run()->void
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
-		glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+		glm::mat4 projection = glm::perspective(glm::radians(camera.fov), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 2000.0f);
 		glm::mat4 view = camera.getViewMatrix();
 		shader.setMat4("projection", projection);
 		shader.setMat4("view", view);
 
 		// render the loaded model
 		glm::mat4 model = glm::mat4(1.0f);
-		model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f)); // translate it down so it's at the center of the scene
-		model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));	// it's a bit too big for our scene, so scale it down
+		model = glm::translate(model, glm::vec3(0.0f, -10.0f, -100.0f)); 
+		model = glm::scale(model, glm::vec3(0.5f, 0.5f, 0.5f));	
 		shader.setMat4("model", model);
 
-		this->model->draw(shader);
+		this->model.draw(shader);
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();

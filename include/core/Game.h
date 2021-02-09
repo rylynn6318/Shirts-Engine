@@ -6,6 +6,7 @@
 #include "render/Camera.h"
 #include "render/Model.h"
 
+
 namespace se
 {
 	//TODO : 다 분리해야함 
@@ -26,7 +27,8 @@ namespace se
 		GLFWwindow* window;
 		Shader shader;
 		VertexArray* vao;
-		Model* model;
+		Model model;
+		glm::mat4 modelMat;
 
 		void processInput(GLFWwindow* window);
 		void load(); //test for load shader, vertex

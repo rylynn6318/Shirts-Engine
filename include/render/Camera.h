@@ -18,7 +18,7 @@ namespace se
 	const float PITCH = 0.0f;
 	const float SPEED = 2.5f;
 	const float SENSITIVITY = 0.1f;
-	const float ZOOM = 45.0f;
+	const float FOV = 45.0f;
 	
 	class Camera
 	{
@@ -45,9 +45,9 @@ namespace se
 		float Yaw;
 		float Pitch;
 
-		float MovementSpeed;
-		float MouseSensitivity;
-		float Zoom;
+		float movementSpeed;
+		float mouseSensitivity;
+		float fov;
 
 	private:
 		auto updateCameraVectors()->void;

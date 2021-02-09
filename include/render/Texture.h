@@ -20,7 +20,7 @@ namespace se
 		std::string type;
 
 	private:
-		GLuint texture;
+		GLuint ID;
 		int width;
 		int height;
 	};

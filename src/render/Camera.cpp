@@ -9,7 +9,7 @@ se::Camera::Camera(
 	glm::vec3 position,
 	glm::vec3 up,
 	float yaw, float pitch) :
-	Front(glm::vec3(0.0f, 0.0f, -1.0f)), MovementSpeed(SPEED), MouseSensitivity(SENSITIVITY), Zoom(ZOOM)
+	Front(glm::vec3(0.0f, 0.0f, -1.0f)), movementSpeed(SPEED), mouseSensitivity(SENSITIVITY), fov(FOV)
 {
 	Position = position;
 	WorldUp = up;
@@ -35,7 +35,7 @@ auto se::Camera::getViewMatrix()->glm::mat4
 
 auto se::Camera::processKeyboard(CameraMovement direction, float deltaTime)->void
 {
-	float velocity = MovementSpeed * deltaTime;
+	float velocity = movementSpeed * deltaTime;
 	if (direction == CameraMovement::FORWARD)
 		Position += Front * velocity;
 	if (direction == CameraMovement::BACKWARD)
@@ -48,8 +48,8 @@ auto se::Camera::processKeyboard(CameraMovement direction, float deltaTime)->voi
 
 auto se::Camera::processMouseMovement(float xoffset, float yoffset, GLboolean constrainPitch)->void
 {
-	xoffset *= MouseSensitivity;
-	yoffset *= MouseSensitivity;
+	xoffset *= mouseSensitivity;
+	yoffset *= mouseSensitivity;
 
 	Yaw += xoffset;
 	Pitch += yoffset;
@@ -67,11 +67,11 @@ auto se::Camera::processMouseMovement(float xoffset, float yoffset, GLboolean co
 
 auto se::Camera::processMouseScroll(float yoffset)->void
 {
-	Zoom -= (float)yoffset;
-	if (Zoom < 1.0f)
-		Zoom = 1.0f;
-	if (Zoom > 45.0f)
-		Zoom = 45.0f;
+	fov -= (float)yoffset;
+	if (fov < 1.0f)
+		fov = 1.0f;
+	if (fov > 45.0f)
+		fov = 45.0f;
 }
 
 auto se::Camera::updateCameraVectors()->void
