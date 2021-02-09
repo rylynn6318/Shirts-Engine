@@ -6,8 +6,7 @@ d 1
 illum 2
 Ka 0 0 0
 Ks 0.2 0.2 0.2
-map_Kd hitlerbody_colspec.tga
-
+map_Kd /Users/man/Downloads/hitler/hitler/hitlerbody_colspec.tga
 newmtl Head
 Kd 0.8 0.8 0.8
 Ns 256
@@ -15,5 +14,5 @@ d 1
 illum 2
 Ka 0 0 0
 Ks 0.2 0.2 0.2
-map_Kd hitlerhead_colspec.tga
+map_Kd /Users/man/Downloads/hitler/hitler/hitlerhead_colspec.tga
 newmtl material_0
