@@ -1,48 +1,35 @@
 #version 460 core
-layout (location = 0) in vec3 aPos;
-layout (location = 1) in vec3 aNormal;
-layout (location = 2) in vec2 aTexCoords;
-layout (location = 5) in ivec4 vertexBoneID[2];
-layout (location = 6) in vec4 vertexBoneWeights[2];
+
+layout(location = 0) in vec3 in_position;
+layout(location = 1) in vec3 in_normal;
+layout(location = 2) in vec2 in_text_coords;
+layout(location = 3) in ivec4 bone_ids;     // INT pointer
+layout(location = 4) in vec4 weights;
+
+out vec2 text_coords;
+out vec3 normal;
+out vec3 frag_pos;
+
+uniform mat4 MVP;
+uniform mat4 M_matrix;
+uniform mat4 normals_matrix;
 
 const int MAX_BONES = 100;
-
-out vec2 TexCoords;
-out vec3 worldNormal;
-out vec3 worldPos;
-out vec3 viewPos;
-
-uniform mat4 model;
-uniform mat4 view;
-uniform mat4 projection;
 uniform mat4 bones[MAX_BONES];
-
 
 void main()
 {
-    mat4 boneTransform = mat4(1.0);
-    
-    // 애니메이션 정보가 있다면
-    if(vertexBoneWeights[0][0] != 0.0)
-    {
-        boneTransform = bones[vertexBoneID[0][0]] * vertexBoneWeights[0][0];
-        boneTransform += bones[vertexBoneID[0][1]] * vertexBoneWeights[0][1];
-        boneTransform += bones[vertexBoneID[0][2]] * vertexBoneWeights[0][2];
-        boneTransform += bones[vertexBoneID[0][3]] * vertexBoneWeights[0][3];
-        boneTransform += bones[vertexBoneID[1][0]] * vertexBoneWeights[1][0];
-    }
-    // 애니메이션 정보가 없다면 boneTransform은 Identity Matrix
- 
-    vec3 modelPos = vec3(boneTransform * vec4(aPos, 1.0));
- 
-    // normal은 방향 벡터이므로 vec4(vertexNormal, 0.0f)을 이용해 translate 성분 제거
-    // 또한 scale 영향을 받지 않으므로 transpose와 inverse를 이용해 scale 성분 제거
-    worldNormal = vec3(transpose(inverse(model)) * vec4(aNormal, 0.0));
-    worldNormal = normalize(worldNormal);
- 
-    worldPos = vec3(model * vec4(modelPos, 1.0));
-    viewPos = vec3(view * vec4(worldPos, 1.0));
-    TexCoords = aTexCoords;
- 
-    gl_Position = projection * vec4(viewPos, 1.0);
+	mat4 bone_transform = bones[bone_ids[0]] * weights[0];
+		bone_transform += bones[bone_ids[1]] * weights[1];
+		bone_transform += bones[bone_ids[2]] * weights[2];
+		bone_transform += bones[bone_ids[3]] * weights[3];
+			
+	vec4 boned_position = bone_transform * vec4(in_position, 1.0); // transformed by bones
+
+	normal = normalize(vec3(normals_matrix * (bone_transform * vec4(in_normal, 0.0))));
+
+	frag_pos = vec3(M_matrix * boned_position);
+	text_coords = in_text_coords;
+
+	gl_Position = MVP * boned_position;
 }
