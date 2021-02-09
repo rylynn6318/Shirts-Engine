@@ -3,13 +3,13 @@
 #include <GLFW/glfw3.h>
 #include "shader/Shader.h"
 #include "render/VertexArray.h"
-#include "render/Texture.h"
+#include "render/Camera.h"
+#include "render/Model.h"
 
 
 namespace se
 {
-	//TODO : ¸Þ¸ð¸® ÇØÁ¦´Â ³ªÁß¿¡ ±¸Á¶°¡ Á¤ÇØÁö°í ³ª¼­ ¹Ù²ã¾ßÇÔ, ÅØ½ºÃÄ°°Àº°Ç ³ªÁß¿¡ ÄÄÆ÷³ÍÆ®·Î »©¾ßÇÔ
-	
+	//TODO : ë‹¤ ë¶„ë¦¬í•´ì•¼í•¨ 
 	class Game
 	{
 	public:
@@ -27,7 +27,8 @@ namespace se
 		GLFWwindow* window;
 		Shader shader;
 		VertexArray* vao;
-		Texture texture;
+		Model model;
+		glm::mat4 modelMat;
 
 		void processInput(GLFWwindow* window);
 		void load(); //test for load shader, vertex
