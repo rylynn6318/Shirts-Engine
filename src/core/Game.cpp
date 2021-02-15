@@ -14,7 +14,7 @@ float lastY = SCR_HEIGHT / 2.0f;
 bool firstMouse = true;
 
 // timing
-float deltaTime = 0.01667f;	// time between current frame and last frame
+float deltaTime = 0.1667f;	// time between current frame and last frame
 float lastFrame = 0.0f;
 
 glm::vec3 lightPos(1.2f, 1.0f, 2.0f);
