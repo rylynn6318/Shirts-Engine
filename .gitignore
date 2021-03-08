@@ -527,3 +527,7 @@ MigrationBackup/
 # End of https://www.toptal.com/developers/gitignore/api/visualstudio,c++,clion,vscode,cmake
 
 .idea
+
+#resource directory
+!**/resource/**/*.obj
+
