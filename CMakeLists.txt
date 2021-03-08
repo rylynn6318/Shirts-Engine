@@ -33,7 +33,7 @@ set(ENGINE_SOURCE_DIR "${PROJECT_SOURCE_DIR}/src")
 set(ENGINE_SOURCE_FILES 
 	"${ENGINE_SOURCE_DIR}/component/Component.cpp"
 	"${ENGINE_SOURCE_DIR}/shader/Shader.cpp"
-)
+		src/system/System.cpp include/system/System.h)
 
 # Engine Target
 add_library(${ENGINE_TARGET} STATIC ${ENGINE_SOURCE_FILES} ${ENGINE_INCLUDE_FILES})

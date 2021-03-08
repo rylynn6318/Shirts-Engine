@@ -5,12 +5,9 @@
 #include <vector>
 #include "Entity.h"
 #include "component/Component.h"
+#include "system/System.h"
 
 namespace se {
-    // 시스템은 Callable, 시그니처는 델타타임(이 경우 std::chrono::milliseconds)과 컴포넌트.
-    template<typename F, component ... Cs>
-    concept system = std::invocable<F, std::chrono::milliseconds, Cs>;
-
     // EntityDB에서 만든 EntityID를 다른 EntityDB 인스턴스에서 쓰는 경우는 없겠지?
     // 거기에 대한 대비책도 있어야 하나??
     class EntityDB final {
@@ -28,6 +25,7 @@ namespace se {
         // 그에 따라 id에 표기를 위한 id에 더해 실제 인덱스를 담을 변수를 넣어야 할지 생각해야 함
         // EntityID 또한 같음
         // 혹은 version 정보를 넣어서 재활용을 계속 하던가
+        // 리스트면 위 방법이 괜찮겠는데 벡터니까 안쓰는 오브젝트용 벡터를 하나 더 두는게 나을 듯
         struct ComponentID final {
             std::size_t id;
         private:
@@ -38,30 +36,33 @@ namespace se {
 
         }
 
-        auto addComponent(EntityID id, component c) {
-
+        template<component Component>
+        auto addComponent(EntityID id, Component c) {
+            getComponentVector<Component>()->push_back(c);
         }
 
-        auto addComponent(EntityID id, component c, component ... cs) {
-
+        auto addComponent(EntityID id, component ... cs) {
+            (addComponent(id, cs), ...);
         }
 
-        auto addSystem(system callable){
+        // 보류
+        template<typename F>
+        auto addSystem(F callable){
 
         }
 
     private:
         class ComponentVectorBase {};
 
-        template<component C>
+        template<component Component>
         class ComponentVector final : ComponentVectorBase {
         public:
-            auto push_back() {
+            auto push_back(Component c) {
 
             }
 
         private:
-            std::vector<C> components;
+            std::vector<Component> components;
             // index(key) : ComponentID
             // value : EntityID
             std::vector<EntityID> component_to_entity;
@@ -75,7 +76,7 @@ namespace se {
         std::vector<std::unique_ptr<ComponentVectorBase>> component_vectors;
 
         template<component C>
-        ComponentVector<C>* getComponentVector() {
+        auto getComponentVector() -> ComponentVector<C>* {
             auto group_id = C::groupId();
 
             if (component_vectors.size() < group_id) {
@@ -83,7 +84,7 @@ namespace se {
             }
 
             if (!component_vectors[group_id]) {
-                component_vectors[group_id] = std::make_unique<ComponentVector<C>();
+                component_vectors[group_id] = std::make_unique<ComponentVector<C>>();
             }
 
             return static_cast<ComponentVector<C>*>(component_vectors[group_id].get());
