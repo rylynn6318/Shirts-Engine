@@ -24,4 +24,5 @@ namespace se {
     static auto groupId() {
         return std::remove_const<C>::type::groupId();
     }
+
 } // namespace se

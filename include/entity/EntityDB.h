@@ -37,8 +37,15 @@ namespace se {
         }
 
         template<component Component>
-        auto addComponent(EntityID id, Component c) {
-            getComponentVector<Component>()->push_back(c);
+        auto addComponent(EntityID id, Component&& c) {
+            //size_t componentID;
+            //componentID = getNextComponentNum();
+            getComponentVector<Component>()->push_back(c); 
+
+            //TODO : ComponentID 구조체구현이랑 getComponent구현
+            //push_back에 넣어놓기
+            getComponentVector<Component>()->component_to_entity[id.id] = componentID;
+            getComponentVector<Component>()->entity_to_component[componentID] = id.id;
         }
 
         auto addComponent(EntityID id, component ... cs) {
