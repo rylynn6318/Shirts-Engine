@@ -6,6 +6,7 @@ namespace se
     // bitset을 어디에 저장할지 정해야 함
     struct Entity
     {
-        /* data */
+        EntityDB::EntityID eID;
+        //비트셋
     };
 } // namespace se
