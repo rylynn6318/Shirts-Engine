@@ -27,12 +27,12 @@ conan_basic_setup()
 # Engine
 set(ENGINE_TARGET "${PROJECT_NAME}")
 set(ENGINE_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/include")
- set(ENGINE_INCLUDE_FILES
+set(ENGINE_INCLUDE_FILES
  	"${ENGINE_INCLUDE_DIR}/component/Component.h"
  	"${ENGINE_INCLUDE_DIR}/entity/Entity.h"
  	"${ENGINE_INCLUDE_DIR}/entity/EntityDB.h"
  	"${ENGINE_INCLUDE_DIR}/shader/Shader.h"
- )
+)
 set(ENGINE_SOURCE_DIR "${PROJECT_SOURCE_DIR}/src")
 set(ENGINE_SOURCE_FILES 
 	"${ENGINE_SOURCE_DIR}/component/Component.cpp"
@@ -46,6 +46,10 @@ set(ENGINE_SOURCE_FILES
 	"${ENGINE_SOURCE_DIR}/render/Camera.cpp"
 	"${ENGINE_SOURCE_DIR}/render/Mesh.cpp"
 	"${ENGINE_SOURCE_DIR}/render/Model.cpp"
+
+	#temp
+	"${ENGINE_SOURCE_DIR}/entity/Entity.cpp"
+	"${ENGINE_SOURCE_DIR}/entity/EntityDB.cpp"
 )
 
 # Engine Target
