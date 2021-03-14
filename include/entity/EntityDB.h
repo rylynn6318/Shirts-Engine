@@ -9,20 +9,20 @@
 #include <range/v3/all.hpp>
 #include "component/Component.h"
 #include "system/System.h"
+#include "Entity.h"
 
 namespace se {
 
-	struct Entity;
 	// EntityDB에서 만든 EntityID를 다른 EntityDB 인스턴스에서 쓰는 경우는 없겠지?
 	// 거기에 대한 대비책도 있어야 하나??
 	class EntityDB final {
 	public:
-		struct EntityID final {
-			std::size_t id;
-			friend class EntityDB;
-		private:
-			std::size_t tm;
-		};
+		//struct EntityID final {
+		//	std::size_t id;
+		//	friend class EntityDB;
+		//private:
+		//	std::size_t tm;
+		//};
 
 
 		// 실제 id != 해당 ComponentVector에서의 인덱스
@@ -63,34 +63,42 @@ namespace se {
 		}
 
 		template<component Component>
-		auto addComponent(EntityID eid, Component&& c) {
-			using component_type = std::decay_t<Component>;
+		auto addComponent(Entity::EntityID eid, Component&& c) {
 			getComponentVector<Component>()->push_back(eid, std::forward<Component>(c));
 			auto entity = std::ranges::find(entities, eid);
 			if (entity != std::ranges::end(entities))
-				entity.ComponentBitmask[groupId<component_type>()] = 1;
+				*entity.ComponentBitmask[groupId<Component>()] = 1;
 		}
-		
+
 		template<component... Component>
-		auto addComponent(EntityID eID, Component... cs) {
+		auto addComponent(Entity::EntityID eID, Component... cs) {
 			(addComponent(eID, cs), ...);
 		}
 
 		template <component Component>
-		auto removeComponent(EntityID eid) {
-			using component_type = std::decay_t<Component>;
+		auto removeComponent(Entity::EntityID eid) {
+			//비트마스크 없애기
 			auto entity = std::ranges::find(entities, eid);
 			if (entity != std::ranges::end(entities))
-				entity.ComponentBitmask[groupId<component_type>()] = 0;
+				*entity.ComponentBitmask[groupId<Component>()] = 0;
 
-			//map에서 삭제?
+			//맵가서 없애기
+			auto cid = getComponentVector<Component>()->findComponentID(eid);
+			if (cid.value())
+			{
+				for (auto iter : getComponentVector<Component>()->EntityComponentMap)
+				{
+					if (iter.second == cid)
+						getComponentVector<Component>()->EntityComponentMap.remove(iter);
+				}
+			}
 		}
 
 		template<component Component>
-		auto getComponent(EntityID eid)->std::optional<Component&> {
-			auto cid = getComponentVector()->findComponentID(eid);
+		auto getComponent(Entity::EntityID eid)->std::optional<Component&> {
+			auto cid = getComponentVector<Component>()->findComponentID(eid);
 			if (cid.value())
-				return getComponentVector()->components[cid.id];
+				return &(getComponentVector<Component>()->components[cid.id]);
 			else
 				return std::nullopt;
 		}
@@ -107,21 +115,21 @@ namespace se {
 		template<component Component>
 		class ComponentVector final : ComponentVectorBase {
 		public:
-			auto push_back(EntityID eID, Component&& c)
+			auto push_back(Entity::EntityID eID, Component&& c)
 			{
 				//맨첨에 gcc랑 msvc 둘다 capacity=0
 				components.reserve(components.size() + 1);
 				components.push_back(c);
 
-				auto cID = components.size();
+				ComponentID cid.id = components.size();
 
-				EntityComponentMap.push_back({ eID.id, cID });
+				EntityComponentMap.push_back({ eID.id, cid });
 			}
 
-			auto findEntityID(std::size_t cid) -> std::optional<EntityID>
+			auto findEntityID(ComponentID cid) -> std::optional<Entity::EntityID>
 			{
 				auto eid = std::find_if(EntityComponentMap.cbegin(), EntityComponentMap.cend(),
-					[&cid](std::pair<EntityID, std::size_t> pair) {
+					[&cid](std::pair<Entity::EntityID, ComponentID> pair) {
 						return pair.second == cid;
 					}
 				);
@@ -130,11 +138,11 @@ namespace se {
 				else
 					return std::nullopt;
 			}
-			 
-			auto findComponentID(EntityID eid) -> std::optional<std::size_t>
+
+			auto findComponentID(Entity::EntityID eid)->std::optional<ComponentID>
 			{
 				auto cid = std::find_if(EntityComponentMap.cbegin(), EntityComponentMap.cend(),
-					[&eid](std::pair<EntityID, std::size_t> pair) {
+					[&eid](std::pair<Entity::EntityID, ComponentID> pair) {
 						return pair.first == eid;
 					}
 				);
@@ -146,13 +154,13 @@ namespace se {
 
 		private:
 			std::vector<Component> components;
-			std::vector<std::pair<EntityID, std::size_t>> EntityComponentMap;
+			std::vector<std::pair<Entity::EntityID, ComponentID> EntityComponentMap;
 			//std::vector<EntityID> component_to_entity;
 			//std::vector<ComponentID> entity_to_component;
 		};
 
 		std::vector<Entity> entities;
-		std::vector<EntityID> recycleEntities; //재활용될 엔티티들;
+		std::vector<Entity::EntityID> recycleEntities; //재활용될 엔티티들;
 
 		std::vector<std::unique_ptr<ComponentVectorBase>> component_vectors;
 
