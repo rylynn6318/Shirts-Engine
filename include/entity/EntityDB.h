@@ -2,6 +2,7 @@
 
 #include <chrono>
 #include <concepts>
+#include <execution>
 #include <memory>
 #include <vector>
 #include <boost/dynamic_bitset.hpp>
@@ -54,11 +55,6 @@ namespace se {
             systems.push_back(std::make_unique<System>(callable));
         }
 
-        template<component c>
-        auto get_component(EntityID id){
-
-        }
-
     private:
         // ---- Utils ----
         // TODO : 우측값 받아서 값 리턴하게 수정?
@@ -100,6 +96,10 @@ namespace se {
         struct system_traits_args {
             static boost::dynamic_bitset<> const mask;
 
+            template<typename Callable>
+            static auto apply(Callable func, EntityID id) {
+                return std::forward<Callable>(func)(getComponent<ArgsOfCallable>(id)...);
+            }
         private:
             struct static_bitset_constructor {
                 static_bitset_constructor(){
@@ -132,12 +132,18 @@ namespace se {
         struct system_traits<R (Callable::*)(Components...) const &> : system_traits_args<std::decay_t<Components>...> {};
 
         // ---- System ----
-        struct SystemBase {};
+        struct SystemBase {
+            virtual auto update(EntityID) = 0;
+        };
 
         template<typename Callable>
         class System : SystemBase {
         public:
             explicit System(Callable callable) : callback(callable) {};
+
+            auto update(EntityID id) override {
+                Signiture::apply(callback, id);
+            }
 
         private:
             using Signiture = system_traits<decltype(&std::decay_t<Callable>::operator())>;
@@ -163,6 +169,19 @@ namespace se {
             }
 
             return static_cast<ComponentVector<C>*>(component_vectors[group_id].get());
+        }
+
+        template<component C>
+        auto getComponent(EntityID id){
+
+        }
+
+        auto runSystems() {
+            for(auto s : systems) {
+                std::for_each(std::execution::par_unseq, entities.begin(), entities.end(), [](Entity e){
+                    *s->update(e.id);
+                });
+            }
         }
     };
 } // namespace se
