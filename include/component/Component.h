@@ -1,6 +1,7 @@
 #pragma once
 
 #include <concepts>
+#include <type_traits>
 
 namespace se {
     // 아래 함수 groupId() 외에서 사용하면 안됨
@@ -19,6 +20,9 @@ namespace se {
 
     template<typename T>
     concept component = std::derived_from<T, Component<T>>;
+
+    template<typename Callable, typename ... T>
+    concept tmp_concept_system = std::invocable<Callable, std::enable_if_t<component<T>, T>...>;
 
     template<component C>
     static auto groupId() {

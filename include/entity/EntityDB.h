@@ -1,13 +1,16 @@
 #pragma once
 
 #include <chrono>
+#include <concepts>
 #include <memory>
 #include <vector>
-#include "Entity.h"
+#include <boost/dynamic_bitset.hpp>
 #include "component/Component.h"
 #include "system/System.h"
 
 namespace se {
+    class Entity;
+
     // EntityDB에서 만든 EntityID를 다른 EntityDB 인스턴스에서 쓰는 경우는 없겠지?
     // 거기에 대한 대비책도 있어야 하나??
     class EntityDB final {
@@ -36,23 +39,43 @@ namespace se {
 
         }
 
-        template<component Component>
-        auto addComponent(EntityID id, Component c) {
-            getComponentVector<Component>()->push_back(c);
+        auto addComponent(EntityID id, component auto c) {
+            getComponentVector<typeof(c)>()->push_back(c);
         }
 
-        auto addComponent(EntityID id, component ... cs) {
+        auto addComponent(EntityID id, component auto ... cs) {
             (addComponent(id, cs), ...);
         }
 
-        // 보류
-        template<typename F>
-        auto addSystem(F callable){
+
+        // TODO : Callable 타입 제한 둬야함
+        template<typename Callable>
+        auto addSystem(Callable callable){
+            systems.push_back(std::make_unique<System>(callable));
+        }
+
+        template<component c>
+        auto get_component(EntityID id){
 
         }
 
     private:
-        class ComponentVectorBase {};
+        // ---- Utils ----
+        // TODO : 우측값 받아서 값 리턴하게 수정?
+        template<component C>
+        static auto addMask(boost::dynamic_bitset<>& mask) {
+            mask[groupId<C>()] = 1;
+        }
+
+        template<component C, component ... Cs>
+        static auto addMask(boost::dynamic_bitset<>& mask) {
+            addMask<C>(mask);
+            addMask<Cs ...>(mask);
+        }
+
+
+        // ---- Component Vector ----
+        struct ComponentVectorBase {};
 
         template<component Component>
         class ComponentVector final : ComponentVectorBase {
@@ -72,8 +95,60 @@ namespace se {
             // map 쓰는 것 보다 이렇게 index를 키로 쓰는 vector 두개 쓰는게 성능상 나을 것 같음.
         };
 
+        // ---- System Traits ----
+        template<component ... ArgsOfCallable>
+        struct system_traits_args {
+            static boost::dynamic_bitset<> const mask;
+
+        private:
+            struct static_bitset_constructor {
+                static_bitset_constructor(){
+                    addMask<ArgsOfCallable ...>(system_traits_args::mask);
+                }
+            };
+
+            static static_bitset_constructor c;
+        };
+
+        template<typename R, component ... Components>
+        struct system_traits<R (*)(Components...)> : system_traits_args<std::decay_t<Components>...> {};
+
+        template<typename R, component ... Components>
+        struct system_traits<R (&)(Components...)> : system_traits_args<std::decay_t<Components>...> {};
+
+        template<typename Callable, typename R, component ... Components>
+        struct system_traits<R (Callable::*)(Components...)> : system_traits_args<std::decay_t<Components>...> {};
+
+        template<typename Callable, typename R, component ... Components>
+        struct system_traits<R (Callable::*)(Components...) &> : system_traits_args<std::decay_t<Components>...> {};
+
+        template<typename Callable, typename R, component ... Components>
+        struct system_traits<R (Callable::*)(Components...) &&> : system_traits_args<std::decay_t<Components>...> {};
+
+        template<typename Callable, typename R, component ... Components>
+        struct system_traits<R (Callable::*)(Components...) const> : system_traits_args<std::decay_t<Components>...> {};
+
+        template<typename Callable, typename R, component ... Components>
+        struct system_traits<R (Callable::*)(Components...) const &> : system_traits_args<std::decay_t<Components>...> {};
+
+        // ---- System ----
+        struct SystemBase {};
+
+        template<typename Callable>
+        class System : SystemBase {
+        public:
+            explicit System(Callable callable) : callback(callable) {};
+
+        private:
+            using Signiture = system_traits<decltype(&std::decay_t<Callable>::operator())>;
+
+            Callable callback;
+        };
+
+        // ---- Member var and func ----
         std::vector<Entity> entities;
         std::vector<std::unique_ptr<ComponentVectorBase>> component_vectors;
+        std::vector<std::unique_ptr<SystemBase>> systems;
 
         template<component C>
         auto getComponentVector() -> ComponentVector<C>* {
