@@ -47,18 +47,18 @@ auto se::Shader::loadShader(const std::string& vertPath, const std::string& frag
     vert = glCreateShader(GL_VERTEX_SHADER);
     glShaderSource(vert, 1, &vShaderCode, NULL);
     glCompileShader(vert);
-    checkCompileErrors(vert, "VERTEX");
+    checkCompileErrors(vert, ShaderType::VERTEX);
     // fragment Shader
     frag = glCreateShader(GL_FRAGMENT_SHADER);
     glShaderSource(frag, 1, &fShaderCode, NULL);
     glCompileShader(frag);
-    checkCompileErrors(frag, "FRAGMENT");
+    checkCompileErrors(frag, ShaderType::FRAGMENT);
     // shader Program
     shaderProgram = glCreateProgram();
     glAttachShader(shaderProgram, vert);
     glAttachShader(shaderProgram, frag);
     glLinkProgram(shaderProgram);
-    checkCompileErrors(shaderProgram, "PROGRAM");
+    checkCompileErrors(shaderProgram, ShaderType::PROGRAM);
     // delete the shaders as they're linked into our program now and no longer necessary
     glDeleteShader(vert);
     glDeleteShader(frag);
@@ -74,19 +74,19 @@ auto se::Shader::activeShader()->void
     glUseProgram(shaderProgram);
 }
 
-auto se::Shader::checkCompileErrors(unsigned int shader, const std::string& type) -> void
+auto se::Shader::checkCompileErrors(unsigned int shader, const ShaderType& type) -> void
 {
     GLint success;
     const unsigned int SIZE = 1024;
     char infoLog[SIZE];
-    if (type != "PROGRAM")
+    if (type != ShaderType::PROGRAM)
     {
         glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
         if (!success)
         {
             glGetShaderInfoLog(shader, SIZE, NULL, infoLog);
-            std::cout << "ERROR::SHADER_COMPILATION_ERROR of type: " << type << "\n"
-                << infoLog << "\n -- --------------------------------------------------- -- " << std::endl;
+            std::cout << "ERROR::SHADER_COMPILATION_ERROR of type: " << static_cast<int>(type) << "\n"
+                << infoLog << "\n -- ------------------------------------------------------ " << std::endl;
         }
     }
     else
@@ -95,8 +95,8 @@ auto se::Shader::checkCompileErrors(unsigned int shader, const std::string& type
         if (!success)
         {
             glGetProgramInfoLog(shader, SIZE, NULL, infoLog);
-            std::cout << "ERROR::PROGRAM_LINKING_ERROR of type: " << type << "\n"
-                << infoLog << "\n -- --------------------------------------------------- -- " << std::endl;
+            std::cout << "ERROR::PROGRAM_LINKING_ERROR of type: " << static_cast<int>(type) << "\n"
+                << infoLog << "\n -- ------------------------------------------------------ " << std::endl;
         }
     }
 }
