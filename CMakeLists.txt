@@ -41,6 +41,8 @@ set(ENGINE_SOURCE_FILES
 	"${ENGINE_SOURCE_DIR}/render/Camera.cpp"
 	"${ENGINE_SOURCE_DIR}/render/Mesh.cpp"
 	"${ENGINE_SOURCE_DIR}/render/Model.cpp"
+
+	"${ENGINE_SOURCE_DIR}/component/TransformComponent.cpp" 
 )
 
 # Engine Target
