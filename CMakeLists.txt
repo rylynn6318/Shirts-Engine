@@ -41,6 +41,9 @@ set(ENGINE_SOURCE_FILES
 	"${ENGINE_SOURCE_DIR}/render/Camera.cpp"
 	"${ENGINE_SOURCE_DIR}/render/Mesh.cpp"
 	"${ENGINE_SOURCE_DIR}/render/Model.cpp"
+	"${ENGINE_SOURCE_DIR}/math/Math.cpp"
+	"${ENGINE_SOURCE_DIR}/component/CollisionComponent.cpp" 
+	"${ENGINE_SOURCE_DIR}/component/PhysicsComponent.cpp" 
 )
 
 # Engine Target
