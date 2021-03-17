@@ -21,7 +21,8 @@ int main()
 	se::EntityDB db;
 
 	auto hero = db.createEntity();
-	db.addComponent(hero, Position{10, 10});//, HealthPoint{10});
+	db.addComponent(hero, Position{10, 10});
+    db.addComponent(hero, HealthPoint{10});
 	db.addSystem([](Position* p){
 	    std::cout << "hero: (" << p->x << ", " << p->y << ")" << std::endl;
 	});

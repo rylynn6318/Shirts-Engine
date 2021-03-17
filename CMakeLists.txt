@@ -49,6 +49,9 @@ set(ENGINE_SOURCE_FILES
 #        "${ENGINE_SOURCE_DIR}/render/Model.cpp"
         )
 
+# debug
+add_compile_options(-g -ggdb)
+
 # Engine Target
 add_library(${ENGINE_TARGET} STATIC ${ENGINE_SOURCE_FILES} ${ENGINE_INCLUDE_FILES})
 target_include_directories(${ENGINE_TARGET} PUBLIC "${ENGINE_INCLUDE_DIR}")

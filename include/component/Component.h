@@ -31,7 +31,7 @@ namespace se {
 
     template<component C>
     static auto getGroupId() {
-        return Component<typename std::remove_const<C>::type>::groupId();
+        return Component<std::remove_const_t<std::remove_pointer_t<std::remove_reference_t<C>>>>::groupId();
     }
 
 } // namespace se

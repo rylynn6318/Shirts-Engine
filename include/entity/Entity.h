@@ -27,7 +27,7 @@ namespace se {
     private:
         friend class EntityDB;
 
-        boost::dynamic_bitset<> mask;
+        boost::dynamic_bitset<> mask{};
 
         Entity() = default;
     };

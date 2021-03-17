@@ -1,5 +1,6 @@
 #pragma once
 
+#include <algorithm>
 #include <chrono>
 #include <concepts>
 #include <execution>
@@ -38,6 +39,8 @@ namespace se {
 		struct ComponentID final {
 			std::size_t id;
 
+			ComponentID(std::size_t id) : id(id) {};
+
 			auto operator==(ComponentID&) -> bool;
 		};
 
@@ -55,22 +58,23 @@ namespace se {
 			}
 			entity.mask.clear();
 			entities.push_back(entity);
-			return entity;
+			return entity.id;
 		}
 
 		template<component Component>
-		auto addComponent(Entity e, Component&& c) {
-			getComponentVector<Component>()->push_back(e.id, std::forward<Component>(c));
-			addMask<Component>(e.mask);
+		auto addComponent(Entity::EntityID eid, Component&& c) {
+			getComponentVector<Component>()->push_back(eid, std::forward<Component>(c));
+
+			addMask<Component>(getEntity(eid).mask);
 		}
 
 		template<component... Component>
-		auto addComponent(Entity e, Component... cs) {
-			(addComponent(e, cs), ...);
+		auto addComponent(Entity::EntityID eid, Component && ...cs) {
+			(addComponent(eid, cs), ...);
 		}
 
 		template <component Component>
-		auto removeComponent(Entity e) {
+		auto removeComponent(Entity& e) {
 			//비트마스크 없애기
 			removeMask<Component>(e.mask);
 
@@ -111,17 +115,23 @@ namespace se {
         // ---- Utils ----
         // TODO : 우측값 받아서 값 리턴하게 수정?
         template<component ... Cs>
-        static auto addMask(boost::dynamic_bitset<>& mask) -> typename std::enable_if<sizeof...(Cs) == 0>::type {}
+        static auto addMask(boost::dynamic_bitset<>& mask) -> typename std::enable_if<(sizeof...(Cs) == 0)>::type {}
 
         template<component C, component ... Cs>
         static auto addMask(boost::dynamic_bitset<>& mask) -> void {
-            mask[getGroupId<C>()] = 1;
+            auto i = getGroupId<C>();
+            if (mask.size() <= i)
+                mask.resize(i + 1);
+            mask.set(i);
             addMask<Cs ...>(mask);
         }
 
         template<component C>
         static auto removeMask(boost::dynamic_bitset<>& mask) -> void {
-            mask[getGroupId<C>()] = 0;
+            auto i = getGroupId<C>();
+            if (mask.size() <= i)
+                mask.resize(i + 1);
+            mask.reset(i);
         }
 
         // ---- Component Vector ----
@@ -135,11 +145,10 @@ namespace se {
 			auto push_back(Entity::EntityID eID, Component&& c)
 			{
 				//맨첨에 gcc랑 msvc 둘다 capacity=0
-				components.reserve(components.size() + 1);
+				// components.reserve(components.size() + 1);
 				components.push_back(c);
 
-				ComponentID cid{};
-				cid.id = components.size() - 1;
+				ComponentID cid{components.size() - 1};
 
 				EntityComponentMap.emplace_back( eID, cid );
 			}
@@ -185,6 +194,7 @@ namespace se {
         template<component ... ArgsOfCallable>
         struct system_traits_args {
             system_traits_args() {
+                mask.clear();
                 addMask<ArgsOfCallable...>(mask);
             }
 
@@ -241,7 +251,8 @@ namespace se {
 
             auto update(Entity& e) -> void override {
                 auto traits = EntityDB::system_traits<Callable>{};
-                traits.apply(db, callback, e);
+                if (e.mask.is_proper_subset_of(traits.mask))
+                    traits.apply(db, callback, e);
             }
 
         private:
@@ -263,15 +274,18 @@ namespace se {
 		auto getComponentVector() -> ComponentVector<C>* {
 			auto group_id = getGroupId<C>();
 
-			if (component_vectors.size() < group_id) {
+			if (component_vectors.size() <= group_id) {
 				component_vectors.resize(group_id + 1);
-			}
-
-			if (!component_vectors[group_id]) {
-				component_vectors[group_id] = std::make_unique<ComponentVector<C>>();
+                component_vectors[group_id] = std::make_unique<ComponentVector<C>>();
 			}
 
 			return static_cast<ComponentVector<C>*>(component_vectors[group_id].get());
 		}
+
+		auto getEntity(Entity::EntityID eid) -> Entity& {
+		    auto e = std::ranges::find_if(entities, [&eid](Entity& e){ return e.id == eid;});
+		    if (e != entities.end())
+		        return *e;
+        }
     };
 } // namespace se
