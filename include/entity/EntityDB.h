@@ -5,183 +5,273 @@
 #include <execution>
 #include <memory>
 #include <vector>
+#include <utility>
+#include <algorithm>
+#include <ranges>
+#include <range/v3/all.hpp>
 #include <boost/dynamic_bitset.hpp>
 #include "component/Component.h"
-#include "system/System.h"
+#include "Entity.h"
 
 namespace se {
-    class Entity;
 
-    // EntityDB에서 만든 EntityID를 다른 EntityDB 인스턴스에서 쓰는 경우는 없겠지?
-    // 거기에 대한 대비책도 있어야 하나??
-    class EntityDB final {
-    public:
-        struct EntityID final {
-            std::size_t id;
-        private:
-            std::size_t index;
-        };
+	// EntityDB에서 만든 EntityID를 다른 EntityDB 인스턴스에서 쓰는 경우는 없겠지?
+	// 거기에 대한 대비책도 있어야 하나??
+	class EntityDB final {
+	public:
+		//struct EntityID final {
+		//	std::size_t id;
+		//	friend class EntityDB;
+		//private:
+		//	std::size_t tm;
+		//};
 
-        // 실제 id != 해당 ComponentVector에서의 인덱스
-        // 컴포넌트 제거를 가장 끝에 있는 컴포넌트와 삭제할 컴포넌트의 위치를 바꾸는 것으로 구현할 생각임
-        // 그리고 나서 last_component를 1 줄이는 거지
-        // 정렬될 필요는 없고 메모리 재할당을 최소화 하기 위함
-        // 그에 따라 id에 표기를 위한 id에 더해 실제 인덱스를 담을 변수를 넣어야 할지 생각해야 함
-        // EntityID 또한 같음
-        // 혹은 version 정보를 넣어서 재활용을 계속 하던가
-        // 리스트면 위 방법이 괜찮겠는데 벡터니까 안쓰는 오브젝트용 벡터를 하나 더 두는게 나을 듯
-        struct ComponentID final {
-            std::size_t id;
-        private:
-            std::size_t index;
-        };
 
-        auto createEntity() {
+		// 실제 id != 해당 ComponentVector에서의 인덱스
+		// 컴포넌트 제거를 가장 끝에 있는 컴포넌트와 삭제할 컴포넌트의 위치를 바꾸는 것으로 구현할 생각임
+		// 그리고 나서 last_component를 1 줄이는 거지
+		// 정렬될 필요는 없고 메모리 재할당을 최소화 하기 위함
+		// 그에 따라 id에 표기를 위한 id에 더해 실제 인덱스를 담을 변수를 넣어야 할지 생각해야 함
+		// EntityID 또한 같음
+		// 혹은 version 정보를 넣어서 재활용을 계속 하던가
+		// 리스트면 위 방법이 괜찮겠는데 벡터니까 안쓰는 오브젝트용 벡터를 하나 더 두는게 나을 듯
+		struct ComponentID final {
+			std::size_t id;
 
-        }
+			auto operator==(ComponentID&) -> bool;
+		};
 
-        auto addComponent(EntityID id, component auto c) {
-            getComponentVector<typeof(c)>()->push_back(c);
-        }
+		auto createEntity() {
+			Entity entity;
+			if (!recycleEntities.empty())
+			{
+				entity.id.id = recycleEntities.back().id;
+				entity.id.index = ++(recycleEntities.back().index);
+				recycleEntities.pop_back();
+			}
+			else
+			{
+				entity.id.id = nextEid();
+			}
+			entity.mask.clear();
+			entities.push_back(entity);
+			return entity;
+		}
 
-        auto addComponent(EntityID id, component auto ... cs) {
-            (addComponent(id, cs), ...);
-        }
+		template<component Component>
+		auto addComponent(Entity e, Component&& c) {
+			getComponentVector<Component>()->push_back(e.id, std::forward<Component>(c));
+			addMask<Component>(e.mask);
+		}
 
+		template<component... Component>
+		auto addComponent(Entity e, Component... cs) {
+			(addComponent(e, cs), ...);
+		}
+
+		template <component Component>
+		auto removeComponent(Entity e) {
+			//비트마스크 없애기
+			removeMask<Component>(e.mask);
+
+			//맵가서 없애기
+			auto cid = getComponentVector<Component>()->findComponentID(e);
+			if (cid)
+			{
+				for (auto iter : getComponentVector<Component>()->EntityComponentMap)
+				{
+					if (iter.second == *cid)
+						getComponentVector<Component>()->EntityComponentMap.remove(iter);
+				}
+			}
+		}
+
+		template<component Component>
+		auto getComponent(Entity::EntityID eid) -> std::conditional_t<std::is_pointer_v<Component>, Component, void> {
+		    if constexpr (std::is_pointer_v<Component>) {
+		        using PureComponent = std::remove_pointer_t<Component>;
+
+                auto cid = getComponentVector<PureComponent>()->findComponentID(eid);
+                if (cid)
+                    return getComponentVector<PureComponent>()->getComponent(*cid);
+                else
+                    return nullptr;
+		    }
+		}
 
         // TODO : Callable 타입 제한 둬야함
         template<typename Callable>
         auto addSystem(Callable callable){
-            systems.push_back(std::make_unique<System>(callable));
+            systems.push_back(std::make_unique<System<Callable>>(callable, this));
         }
+
+        auto runSystems() -> void;
 
     private:
         // ---- Utils ----
         // TODO : 우측값 받아서 값 리턴하게 수정?
-        template<component C>
-        static auto addMask(boost::dynamic_bitset<>& mask) {
-            mask[groupId<C>()] = 1;
-        }
+        template<component ... Cs>
+        static auto addMask(boost::dynamic_bitset<>& mask) -> typename std::enable_if<sizeof...(Cs) == 0>::type {}
 
         template<component C, component ... Cs>
-        static auto addMask(boost::dynamic_bitset<>& mask) {
-            addMask<C>(mask);
+        static auto addMask(boost::dynamic_bitset<>& mask) -> void {
+            mask[getGroupId<C>()] = 1;
             addMask<Cs ...>(mask);
         }
 
+        template<component C>
+        static auto removeMask(boost::dynamic_bitset<>& mask) -> void {
+            mask[getGroupId<C>()] = 0;
+        }
 
         // ---- Component Vector ----
-        struct ComponentVectorBase {};
+        struct ComponentVectorBase {
+		    virtual ~ComponentVectorBase() = default;
+		};
 
-        template<component Component>
-        class ComponentVector final : ComponentVectorBase {
-        public:
-            auto push_back(Component c) {
+		template<component Component>
+		class ComponentVector final : public ComponentVectorBase {
+		public:
+			auto push_back(Entity::EntityID eID, Component&& c)
+			{
+				//맨첨에 gcc랑 msvc 둘다 capacity=0
+				components.reserve(components.size() + 1);
+				components.push_back(c);
 
-            }
+				ComponentID cid{};
+				cid.id = components.size() - 1;
 
-        private:
-            std::vector<Component> components;
-            // index(key) : ComponentID
-            // value : EntityID
-            std::vector<EntityID> component_to_entity;
-            // index(key) : EntityID
-            // value : ComponentID
-            std::vector<ComponentID> entity_to_component;
-            // map 쓰는 것 보다 이렇게 index를 키로 쓰는 vector 두개 쓰는게 성능상 나을 것 같음.
-        };
+				EntityComponentMap.emplace_back( eID, cid );
+			}
+
+			auto findEntityID(ComponentID cid) -> std::optional<Entity::EntityID>
+			{
+				auto eid = std::find_if(EntityComponentMap.cbegin(), EntityComponentMap.cend(),
+					[&cid](std::pair<Entity::EntityID, ComponentID> pair) {
+						return pair.second == cid;
+					}
+				);
+				if (eid != EntityComponentMap.cend())
+					return (*eid).first;
+				else
+					return std::nullopt;
+			}
+
+			auto findComponentID(Entity::EntityID eid)->std::optional<ComponentID>
+			{
+				auto cid = std::find_if(EntityComponentMap.cbegin(), EntityComponentMap.cend(),
+					[&eid](std::pair<Entity::EntityID, ComponentID> pair) {
+						return pair.first == eid;
+					}
+				);
+				if (cid != EntityComponentMap.cend())
+					return (*cid).second;
+				else
+					return std::nullopt;
+			}
+
+			auto getComponent(ComponentID cid) -> Component* {
+			    return &components[cid.id];
+			}
+
+		private:
+			std::vector<Component> components;
+			std::vector<std::pair<Entity::EntityID, ComponentID>> EntityComponentMap;
+			//std::vector<EntityID> component_to_entity;
+			//std::vector<ComponentID> entity_to_component;
+		};
 
         // ---- System Traits ----
         template<component ... ArgsOfCallable>
         struct system_traits_args {
-            static boost::dynamic_bitset<> const mask;
+            system_traits_args() {
+                addMask<ArgsOfCallable...>(mask);
+            }
 
+            boost::dynamic_bitset<> mask;
+
+            // TODO : 아래 내용 생각해볼것
+            // 여기는 mask 정보만 들고 있고 실제 함수 실행은 타입의 mask(guid)로 getComponent 하는 함수를 만들어서
+            // System에 배치하는게 좀 더 직관적인가?
             template<typename Callable>
-            static auto apply(Callable func, EntityID id) {
-                return std::forward<Callable>(func)(getComponent<ArgsOfCallable>(id)...);
+            auto apply(EntityDB* db, Callable func, Entity& e) {
+                return std::forward<Callable>(func)(db->getComponent<ArgsOfCallable>(e.id)...);
             }
         private:
-            struct static_bitset_constructor {
-                static_bitset_constructor(){
-                    addMask<ArgsOfCallable ...>(system_traits_args::mask);
-                }
-            };
-
-            static static_bitset_constructor c;
-        };
-
-        template<typename R, component ... Components>
-        struct system_traits<R (*)(Components...)> : system_traits_args<std::decay_t<Components>...> {};
-
-        template<typename R, component ... Components>
-        struct system_traits<R (&)(Components...)> : system_traits_args<std::decay_t<Components>...> {};
-
-        template<typename Callable, typename R, component ... Components>
-        struct system_traits<R (Callable::*)(Components...)> : system_traits_args<std::decay_t<Components>...> {};
-
-        template<typename Callable, typename R, component ... Components>
-        struct system_traits<R (Callable::*)(Components...) &> : system_traits_args<std::decay_t<Components>...> {};
-
-        template<typename Callable, typename R, component ... Components>
-        struct system_traits<R (Callable::*)(Components...) &&> : system_traits_args<std::decay_t<Components>...> {};
-
-        template<typename Callable, typename R, component ... Components>
-        struct system_traits<R (Callable::*)(Components...) const> : system_traits_args<std::decay_t<Components>...> {};
-
-        template<typename Callable, typename R, component ... Components>
-        struct system_traits<R (Callable::*)(Components...) const &> : system_traits_args<std::decay_t<Components>...> {};
-
-        // ---- System ----
-        struct SystemBase {
-            virtual auto update(EntityID) = 0;
+//            struct static_bitset_constructor {
+//                static_bitset_constructor(){
+//                    addMask<ArgsOfCallable ...>(system_traits_args::mask);
+//                }
+//            };
+//
+//            static static_bitset_constructor c;
         };
 
         template<typename Callable>
-        class System : SystemBase {
-        public:
-            explicit System(Callable callable) : callback(callable) {};
+	    struct system_traits : public system_traits<decltype(&std::decay_t<Callable>::operator())> {};
 
-            auto update(EntityID id) override {
-                Signiture::apply(callback, id);
+        template<typename R, component ... Components>
+        struct system_traits<R (&)(Components...)> : public system_traits_args<Components...> {};
+
+        template<typename Callable, typename R, component ... Components>
+        struct system_traits<R (Callable::*)(Components...)> : public system_traits_args<Components...> {};
+
+        template<typename Callable, typename R, component ... Components>
+        struct system_traits<R (Callable::*)(Components...) &> : public system_traits_args<Components...> {};
+
+        template<typename Callable, typename R, component ... Components>
+        struct system_traits<R (Callable::*)(Components...) &&> : public system_traits_args<Components...> {};
+
+        template<typename Callable, typename R, component ... Components>
+        struct system_traits<R (Callable::*)(Components...) const> : public system_traits_args<Components...> {};
+
+        template<typename Callable, typename R, component ... Components>
+        struct system_traits<R (Callable::*)(Components...) const &> : public system_traits_args<Components...> {};
+
+        // ---- System ----
+        struct SystemBase {
+            virtual ~SystemBase() = default;
+            virtual auto update(Entity&) -> void = 0;
+        };
+
+        template<typename Callable>
+        class System : public SystemBase {
+        public:
+            System(Callable callable, EntityDB* db) : callback(callable), db(db) {};
+
+            auto update(Entity& e) -> void override {
+                auto traits = EntityDB::system_traits<Callable>{};
+                traits.apply(db, callback, e);
             }
 
         private:
-            using Signiture = system_traits<decltype(&std::decay_t<Callable>::operator())>;
-
+            EntityDB *db;
             Callable callback;
         };
 
         // ---- Member var and func ----
         std::vector<Entity> entities;
+        std::vector<Entity::EntityID> recycleEntities; //재활용될 엔티티들;
         std::vector<std::unique_ptr<ComponentVectorBase>> component_vectors;
         std::vector<std::unique_ptr<SystemBase>> systems;
 
-        template<component C>
-        auto getComponentVector() -> ComponentVector<C>* {
-            auto group_id = C::groupId();
+        std::size_t eid_counter = 0;
 
-            if (component_vectors.size() < group_id) {
-                component_vectors.resize(group_id + 1);
-            }
-
-            if (!component_vectors[group_id]) {
-                component_vectors[group_id] = std::make_unique<ComponentVector<C>>();
-            }
-
-            return static_cast<ComponentVector<C>*>(component_vectors[group_id].get());
-        }
+        auto nextEid() -> std::size_t;
 
         template<component C>
-        auto getComponent(EntityID id){
+		auto getComponentVector() -> ComponentVector<C>* {
+			auto group_id = getGroupId<C>();
 
-        }
+			if (component_vectors.size() < group_id) {
+				component_vectors.resize(group_id + 1);
+			}
 
-        auto runSystems() {
-            for(auto s : systems) {
-                std::for_each(std::execution::par_unseq, entities.begin(), entities.end(), [](Entity e){
-                    *s->update(e.id);
-                });
-            }
-        }
+			if (!component_vectors[group_id]) {
+				component_vectors[group_id] = std::make_unique<ComponentVector<C>>();
+			}
+
+			return static_cast<ComponentVector<C>*>(component_vectors[group_id].get());
+		}
     };
 } // namespace se

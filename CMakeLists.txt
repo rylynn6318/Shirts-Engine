@@ -31,22 +31,22 @@ set(ENGINE_INCLUDE_FILES
         "${ENGINE_INCLUDE_DIR}/component/Component.h"
         "${ENGINE_INCLUDE_DIR}/entity/Entity.h"
         "${ENGINE_INCLUDE_DIR}/entity/EntityDB.h"
-        "${ENGINE_INCLUDE_DIR}/shader/Shader.h"
-        "${ENGINE_INCLUDE_DIR}/system/System.h"
+#        "${ENGINE_INCLUDE_DIR}/shader/Shader.h"
         )
+
 set(ENGINE_SOURCE_DIR "${PROJECT_SOURCE_DIR}/src")
 set(ENGINE_SOURCE_FILES
         "${ENGINE_SOURCE_DIR}/component/Component.cpp"
-        "${ENGINE_SOURCE_DIR}/shader/Shader.cpp"
-        "${ENGINE_SOURCE_DIR}/system/System.cpp"
-        "${ENGINE_SOURCE_DIR}/component/Component.cpp"
-        "${ENGINE_SOURCE_DIR}/shader/Shader.cpp"
-        "${ENGINE_SOURCE_DIR}/core/Game.cpp"
-        "${ENGINE_SOURCE_DIR}/render/VertexArray.cpp"
-        #	"${ENGINE_SOURCE_DIR}/render/Texture.cpp"
-        "${ENGINE_SOURCE_DIR}/render/Camera.cpp"
-        "${ENGINE_SOURCE_DIR}/render/Mesh.cpp"
-        "${ENGINE_SOURCE_DIR}/render/Model.cpp"
+        "${ENGINE_SOURCE_DIR}/entity/Entity.cpp"
+        "${ENGINE_SOURCE_DIR}/entity/EntityDB.cpp"
+
+#        "${ENGINE_SOURCE_DIR}/shader/Shader.cpp"
+#        "${ENGINE_SOURCE_DIR}/core/Game.cpp"
+#        "${ENGINE_SOURCE_DIR}/render/VertexArray.cpp"
+#       "${ENGINE_SOURCE_DIR}/render/Texture.cpp"
+#        "${ENGINE_SOURCE_DIR}/render/Camera.cpp"
+#       "${ENGINE_SOURCE_DIR}/render/Mesh.cpp"
+#        "${ENGINE_SOURCE_DIR}/render/Model.cpp"
         )
 
 # Engine Target
@@ -62,7 +62,6 @@ set(TEST_SOURCE_DIR "${PROJECT_SOURCE_DIR}/test/src")
 set(TEST_SOURCE_FILES "${TEST_SOURCE_DIR}/main.cpp")
 
 # Test target
-# TODO : remove CONAN_LIBS
 add_executable(${TEST_TARGET} ${TEST_SOURCE_FILES})
 target_include_directories(${TEST_TARGET} PRIVATE "${TEST_INCLUDE_DIR}")
-target_link_libraries(${TEST_TARGET} ${CONAN_LIBS} ${ENGINE_TARGET})
+target_link_libraries(${TEST_TARGET} ${ENGINE_TARGET})
