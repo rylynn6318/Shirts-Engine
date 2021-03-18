@@ -252,7 +252,7 @@ namespace se {
             auto update(Entity& e) -> void override {
                 auto traits = EntityDB::system_traits<Callable>{};
 				traits.mask.resize(e.mask.size());
-				if(traits.mask.is_proper_subset_of(e.mask))
+				if(traits.mask.is_proper_subset_of(e.mask) || traits.mask == e.mask)
                     traits.apply(db, callback, e);
             }
 
