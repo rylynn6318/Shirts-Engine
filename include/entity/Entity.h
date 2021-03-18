@@ -5,14 +5,16 @@
 namespace se {
     struct Entity {
         struct EntityID {
+            friend class EntityDB;
+            friend class Entity;
+            friend struct std::hash<EntityID>;
+
             std::size_t id;
 
             auto operator==(EntityID &) -> bool;
+            auto operator==(EntityID const &) const -> bool;
             auto operator==(Entity &) -> bool;
-
         private:
-            friend class EntityDB;
-            friend class Entity;
 
             std::size_t index;
 
@@ -32,3 +34,14 @@ namespace se {
         Entity() = default;
     };
 } // namespace se
+
+namespace std {
+    template<>
+    struct hash<se::Entity::EntityID> {
+        size_t operator()(const se::Entity::EntityID& eid) const {
+            hash<size_t> hash_func;
+
+            return (hash_func(eid.id)) ^ eid.index;
+        }
+    };
+}

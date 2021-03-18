@@ -5,9 +5,9 @@
 #include <concepts>
 #include <execution>
 #include <memory>
+#include <optional>
 #include <vector>
 #include <utility>
-#include <algorithm>
 #include <ranges>
 #include <range/v3/all.hpp>
 #include <boost/dynamic_bitset.hpp>
@@ -37,14 +37,16 @@ namespace se {
 		// 혹은 version 정보를 넣어서 재활용을 계속 하던가
 		// 리스트면 위 방법이 괜찮겠는데 벡터니까 안쓰는 오브젝트용 벡터를 하나 더 두는게 나을 듯
 		struct ComponentID final {
-			std::size_t id;
+			std::size_t id{};
 
-			ComponentID(std::size_t id) : id(id) {};
+			ComponentID() = default;
+
+			explicit ComponentID(std::size_t id) : id(id) {};
 
 			auto operator==(ComponentID&) -> bool;
 		};
 
-		auto createEntity() {
+		auto createEntity() -> Entity& {
 			Entity entity;
 			if (!recycleEntities.empty())
 			{
@@ -57,21 +59,21 @@ namespace se {
 				entity.id.id = nextEid();
 			}
 			entity.mask.clear();
-			entities.push_back(entity);
-			return entity.id;
+			entities.push_back(std::move(entity));
+			return entities.back();
 		}
 
 		template<component Component>
-		auto addComponent(Entity::EntityID eid, Component&& c) {
-			getComponentVector<Component>()->push_back(eid, std::forward<Component>(c));
-
-			addMask<Component>(getEntity(eid).mask);
+		auto addComponent(Entity& e, Component&& c) {
+			getComponentVector<Component>()->push_back(e.id, std::forward<Component>(c));
+			addMask<Component>(e.mask);
 		}
 
-		template<component... Component>
-		auto addComponent(Entity::EntityID eid, Component && ...cs) {
-			(addComponent(eid, cs), ...);
-		}
+//		template<component Component, component... Components>
+//		auto addComponent(Entity::EntityID eid, Component&& c, Components && ...cs) {
+//			addComponent(eid, c);
+//			ᅟaddComponent(eid, cs...);
+//		}
 
 		template <component Component>
 		auto removeComponent(Entity& e) {
@@ -150,42 +152,48 @@ namespace se {
 
 				ComponentID cid{components.size() - 1};
 
-				EntityComponentMap.emplace_back( eID, cid );
+				// EntityComponentMap.emplace_back( eID, cid );
+                EntityComponentMap2.template emplace(std::make_pair(eID, cid));
 			}
 
-			auto findEntityID(ComponentID cid) -> std::optional<Entity::EntityID>
-			{
-				auto eid = std::find_if(EntityComponentMap.cbegin(), EntityComponentMap.cend(),
-					[&cid](std::pair<Entity::EntityID, ComponentID> pair) {
-						return pair.second == cid;
-					}
-				);
-				if (eid != EntityComponentMap.cend())
-					return (*eid).first;
-				else
-					return std::nullopt;
-			}
+//			auto findEntityID(ComponentID cid) -> std::optional<Entity::EntityID>
+//			{
+//				auto eid = std::find_if(EntityComponentMap.cbegin(), EntityComponentMap.cend(),
+//					[&cid](std::pair<Entity::EntityID, ComponentID> pair) {
+//						return pair.second == cid;
+//					}
+//				);
+//				if (eid != EntityComponentMap.cend())
+//					return (*eid).first;
+//				else
+//					return std::nullopt;
+//			}
 
 			auto findComponentID(Entity::EntityID eid)->std::optional<ComponentID>
 			{
-				auto cid = std::find_if(EntityComponentMap.cbegin(), EntityComponentMap.cend(),
-					[&eid](std::pair<Entity::EntityID, ComponentID> pair) {
-						return pair.first == eid;
-					}
-				);
-				if (cid != EntityComponentMap.cend())
-					return (*cid).second;
-				else
-					return std::nullopt;
+//				auto cid = std::find_if(EntityComponentMap.cbegin(), EntityComponentMap.cend(),
+//					[&eid](std::pair<Entity::EntityID, ComponentID> pair) {
+//						return pair.first == eid;
+//					}
+//				);
+//				if (cid != EntityComponentMap.cend())
+//					return (*cid).second;
+//				else
+//					return std::nullopt;
+                if (EntityComponentMap2.find(eid) != EntityComponentMap2.end())
+                    return ComponentID{EntityComponentMap2[eid].id};
+                else
+                    return std::nullopt;
 			}
 
-			auto getComponent(ComponentID cid) -> Component* {
+			auto getComponent(ComponentID cid) {
 			    return &components[cid.id];
 			}
 
 		private:
 			std::vector<Component> components;
-			std::vector<std::pair<Entity::EntityID, ComponentID>> EntityComponentMap;
+			std::unordered_map<Entity::EntityID, ComponentID> EntityComponentMap2;
+			//std::vector<std::pair<Entity::EntityID, ComponentID>> EntityComponentMap;
 			//std::vector<EntityID> component_to_entity;
 			//std::vector<ComponentID> entity_to_component;
 		};
@@ -282,11 +290,5 @@ namespace se {
 
 			return static_cast<ComponentVector<C>*>(component_vectors[group_id].get());
 		}
-
-		auto getEntity(Entity::EntityID eid) -> Entity& {
-		    auto e = std::ranges::find_if(entities, [&eid](Entity& e){ return e.id == eid;});
-		    if (e != entities.end())
-		        return *e;
-        }
     };
 } // namespace se

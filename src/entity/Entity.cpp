@@ -8,6 +8,10 @@ auto se::Entity::EntityID::operator==(se::Entity &e) -> bool {
     return *this == e.id;
 }
 
+auto se::Entity::EntityID::operator==(se::Entity::EntityID const & eid) const -> bool {
+    return this->id == eid.id && this->index == eid.index;
+}
+
 bool se::Entity::operator==(se::Entity &e) {
     return this->id == e.id;
 }
