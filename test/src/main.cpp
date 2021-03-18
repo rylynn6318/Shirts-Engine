@@ -14,9 +14,17 @@ struct HealthPoint : public se::Component<HealthPoint> {
 	explicit HealthPoint(int hp) : hp(hp) {};
 };
 
-struct test : public se::Component<test>
-{
+struct ManaPoint : public se::Component<ManaPoint> {
+    int mp;
 
+    explicit ManaPoint(int mp) : mp(mp) {};
+};
+
+struct Name : public se::Component<Name>
+{
+    std::string name;
+
+    explicit Name(std::string&& name) : name(name) {};
 };
 
 int main()
@@ -30,11 +38,25 @@ int main()
 	auto p = HealthPoint{ 99 };
 	db.addComponent(hero, Position{ 3,4 });
 	db.addComponent(hero, HealthPoint{ 99 });
-	db.addComponent(hero, test{});
-	db.addSystem([](Position* p, HealthPoint* h) {
-		std::cout << "Pos : " << p->x << ", " << p->y << std::endl;
-		std::cout << "health : " << h->hp << std::endl;
+    db.addComponent(hero, ManaPoint{ 20 });
+	db.addComponent(hero, Name{"Hero"});
+
+    auto monster = db.createEntity();
+    db.addComponent(monster, Position{ 5,5 });
+    db.addComponent(monster, HealthPoint{ 10 });
+    db.addComponent(monster, Name{"Monster"});
+
+	db.addSystem([](Position* p, HealthPoint* h, Name* n) {
+	    std::cout << "Name : " << n->name << std::endl;
+		std::cout << "\tPos : " << p->x << ", " << p->y << std::endl;
+		std::cout << "\thealth : " << h->hp << std::endl;
 		});
+
+    db.addSystem([](ManaPoint* m, Name* n) {
+        std::cout << "Name : " << n->name << std::endl;
+        std::cout << "\tmana : " << m->mp << std::endl;
+    });
+
 	db.runSystems();
 
 	std::cout << "test end" << std::endl;
