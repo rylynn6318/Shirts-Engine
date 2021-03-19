@@ -64,7 +64,7 @@ namespace se {
 			return entities.back();
 		}
 
-		auto removeEntity(Entity& e)
+		auto removeEntity(Entity& e) -> void
 		{
 			const auto index = e.id.index;
 			if (entities[index].id.index != e.id.index)
@@ -79,8 +79,9 @@ namespace se {
 
 		template<component Component>
 		auto addComponent(Entity& e, Component&& c) {
-			getComponentVector<Component>()->push_back(e.id, std::forward<Component>(c));
-			addMask<Component>(e.mask);
+			using component_type = std::decay_t<Component>;
+			getComponentVector<component_type>()->push_back(e.id, std::forward<component_type>(c));
+			addMask<component_type>(e.mask);
 		}
 
 //		template<component Component, component... Components>
