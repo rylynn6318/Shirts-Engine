@@ -48,19 +48,33 @@ namespace se {
 
 		auto createEntity() -> Entity& {
 			Entity entity;
+			entity.id.id = nextEid();
 			if (!recycleEntities.empty())
 			{
-				entity.id.id = recycleEntities.back().id;
-				entity.id.index = ++(recycleEntities.back().index);
+				entity.id.index = recycleEntities.back();
 				recycleEntities.pop_back();
 			}
-			else
+			else //여기서 emplace_back이 낫나? 아니면 그냥 다 초기화시켜버리고 push_back을 하는게낫나
 			{
-				entity.id.id = nextEid();
+				entity.id.index = entities.size();
+				//entities.emplace_back();
 			}
 			entity.mask.clear();
 			entities.push_back(std::move(entity));
 			return entities.back();
+		}
+
+		auto removeEntity(Entity& e)
+		{
+			const auto index = e.id.index;
+			if (entities[index].id.index != e.id.index)
+				return;
+
+			// do something?
+
+			++entities[index].id.index;
+			entities[index].mask.clear();
+			recycleEntities.push_back(index);
 		}
 
 		template<component Component>
@@ -96,6 +110,9 @@ namespace se {
 		auto getComponent(Entity::EntityID eid) -> std::conditional_t<std::is_pointer_v<Component>, Component, void> {
 		    if constexpr (std::is_pointer_v<Component>) {
 		        using PureComponent = std::remove_pointer_t<Component>;
+				
+				if (entities[eid.index].id.index != eid.index)
+					return nullptr;
 
                 auto cid = getComponentVector<PureComponent>()->findComponentID(eid);
                 if (cid)
@@ -153,7 +170,7 @@ namespace se {
 				ComponentID cid{components.size() - 1};
 
 				// EntityComponentMap.emplace_back( eID, cid );
-                EntityComponentMap2.template emplace(std::make_pair(eID, cid));
+                EntityComponentMap2.emplace(std::make_pair(eID, cid));
 			}
 
 //			auto findEntityID(ComponentID cid) -> std::optional<Entity::EntityID>
@@ -271,7 +288,7 @@ namespace se {
 
         // ---- Member var and func ----
         std::vector<Entity> entities;
-        std::vector<Entity::EntityID> recycleEntities; //재활용될 엔티티들;
+        std::vector<Entity::EntityID::index_type> recycleEntities; //재활용될 엔티티들;
         std::vector<std::unique_ptr<ComponentVectorBase>> component_vectors;
         std::vector<std::unique_ptr<SystemBase>> systems;
 

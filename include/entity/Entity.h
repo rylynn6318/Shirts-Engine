@@ -5,6 +5,7 @@
 namespace se {
     struct Entity {
         struct EntityID {
+            using index_type = std::size_t;
             friend class EntityDB;
             friend class Entity;
             friend struct std::hash<EntityID>;
@@ -16,7 +17,7 @@ namespace se {
             auto operator==(Entity &) -> bool;
         private:
 
-            std::size_t index;
+            index_type index = 0;
 
             EntityID() = default;
         };
