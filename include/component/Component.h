@@ -19,19 +19,23 @@ namespace se {
     };
 
     template<typename T>
-    struct NotComponent{
+    struct NotComponent {
         static_assert(true, "컴포넌트가 아닌 객체 감지");
     };
 
     template<typename T>
-    concept component = std::derived_from<std::remove_const_t<std::remove_pointer_t<std::remove_reference_t<T>>>, Component<std::remove_const_t<std::remove_pointer_t<std::remove_reference_t<T>>>>>;
+    concept component = std::derived_from<std::remove_pointer_t<T>, Component<std::remove_pointer_t<T>>> ||
+                        std::derived_from<std::decay_t<T>, Component<std::decay_t<T>>>;
 
     template<typename Callable, typename ... T>
     concept tmp_concept_system = std::invocable<Callable, std::enable_if_t<component<T>, T>...>;
 
     template<component C>
     static auto getGroupId() {
-        return Component<std::remove_const_t<std::remove_pointer_t<std::remove_reference_t<C>>>>::groupId();
+        if constexpr (std::is_pointer_v<C>)
+            return std::remove_pointer_t<C>::groupId();
+        else
+            return Component<std::decay_t<C>>::groupId();
     }
 
 } // namespace se

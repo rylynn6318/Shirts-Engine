@@ -3,46 +3,43 @@
 #include <boost/dynamic_bitset.hpp>
 
 namespace se {
-    struct Entity {
-        struct EntityID {
-            using index_type = std::size_t;
+    struct Entity final {
+        struct ID final {
             friend class EntityDB;
             friend class Entity;
-            friend struct std::hash<EntityID>;
+            friend struct std::hash<ID>;
 
-            std::size_t id;
-
-            auto operator==(EntityID &) -> bool;
-            auto operator==(EntityID const &) const -> bool;
+            auto operator==(ID &) -> bool;
+            auto operator==(ID const &) const -> bool;
             auto operator==(Entity &) -> bool;
+
         private:
+            std::size_t recycle_counter = 0;
+            std::size_t const index;
 
-            index_type index = 0;
-
-            EntityID() = default;
+            explicit ID(std::size_t index) : index(index) {};
         };
 
-        EntityID id{};
-
-        auto operator==(Entity &) -> bool;
-        auto operator==(EntityID &) -> bool;
-
-    private:
         friend class EntityDB;
 
+        auto operator==(Entity &) -> bool;
+        auto operator==(ID &) -> bool;
+    private:
+
+        ID id;
         boost::dynamic_bitset<> mask{};
 
-        Entity() = default;
+        explicit Entity(ID id) : id(id) {};
     };
 } // namespace se
 
 namespace std {
     template<>
-    struct hash<se::Entity::EntityID> {
-        size_t operator()(const se::Entity::EntityID& eid) const {
+    struct hash<se::Entity::ID> {
+        auto operator()(se::Entity::ID const & eid) const {
             hash<size_t> hash_func;
 
-            return (hash_func(eid.id)) ^ eid.index;
+            return (hash_func(eid.index)); // ^ eid.recycle_counter;
         }
     };
 }
