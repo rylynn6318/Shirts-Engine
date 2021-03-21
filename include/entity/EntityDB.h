@@ -97,16 +97,6 @@ namespace se {
         }
 
         // ---- Inner Class, Struct ----
-        // -------- ComponentID --------
-        struct ComponentID final {
-            std::size_t id{};
-
-            ComponentID() = default;
-
-            explicit ComponentID(std::size_t id) : id(id) {};
-
-            auto operator==(ComponentID &) -> bool;
-        };
 
         // -------- Component Vector --------
         struct ComponentVectorBase {
@@ -117,6 +107,18 @@ namespace se {
 
         template<component Component>
         class ComponentVector final : public ComponentVectorBase {
+            struct ComponentID final {
+                std::size_t id{};
+
+                ComponentID() = default;
+
+                explicit ComponentID(std::size_t id) : id(id) {};
+
+                auto operator==(ComponentID & cid) -> bool {
+                    return this->id == cid.id;
+                }
+            };
+
         public:
             using PureComponent = std::conditional_t<std::is_pointer_v<Component>, std::remove_pointer_t<Component>, std::decay_t<Component>>;
 
@@ -149,18 +151,23 @@ namespace se {
             }
 
             // TODO : 존재하지 않는 cid를 파라메터로 넘긴 경우의 예외처리 필요함
-            auto getComponentPtr(ComponentID cid) -> PureComponent * {
-                return &components[cid.id];
+            auto unsafeGetComponentPtr(Entity::ID eid) -> PureComponent * {
+                return &components[unsafeFindComponentID(eid).id];
             }
 
-            auto getComponentRef(ComponentID cid) -> PureComponent & {
-                return components[cid.id];
+            auto unsafeGetComponentRef(Entity::ID eid) -> PureComponent & {
+                return components[unsafeFindComponentID(eid).id];
             }
 
         private:
             std::vector<PureComponent> components;
             std::unordered_map<Entity::ID, ComponentID> eid_to_cid_map;
             std::vector<Entity::ID> cid_to_eid_map;
+
+            // mask 확인 해서 이미 존재가 확실한 경우에만 사용할 것
+            auto unsafeFindComponentID(Entity::ID eid) -> ComponentID  {
+                return eid_to_cid_map[eid];
+            }
         };
 
         // -------- System Traits --------
@@ -270,20 +277,18 @@ namespace se {
             return static_cast<ComponentVector<C> *>(component_vectors[group_id].get());
         }
 
-        // Component : System에서 이 함수 호출할때 Component는 Component의 포인터 혹은 decay_t가 적용된 순수 타입임.
+        // C : System에서 이 함수 호출할때 Component는 Component의 포인터 혹은 decay_t가 적용된 순수 타입임.
         // 그래서 포인터로 왔을 경우는 그대로 포인터로 넘겨주고, 그 외엔 레퍼런스로 리턴.
         // 또한 시스템에서 호출했을 경우엔 이미 마스크로 해당 컴포넌트가 있는 엔티티만 파라메터로 오니 null 예외 처리 필요 없음
         // TODO : 사용자가 그냥 호출 했을 경우엔 문제 있으니 사용자용 optional<Component>와 시스템용 예외처리 없는 함수 2개 만들어야 할듯
-        template<component Component>
-        auto
-        unsafeGetComponent(Entity::ID eid) -> std::conditional_t<std::is_pointer_v<Component>, Component, Component &> {
-            auto com_vec = getComponentVector<Component>();
-            auto cid = com_vec->findComponentID(eid);
+        template<component C>
+        auto unsafeGetComponent(Entity::ID eid) -> std::conditional_t<std::is_pointer_v<C>, C, C &> {
+            auto com_vec = getComponentVector<C>();
 
-            if constexpr (std::is_pointer_v<Component>) {
-                return com_vec->getComponentPtr(*cid);
+            if constexpr (std::is_pointer_v<C>) {
+                return com_vec->unsafeGetComponentPtr(eid);
             } else {
-                return com_vec->getComponentRef(*cid);
+                return com_vec->unsafeGetComponentRef(eid);
             }
         }
     };
