@@ -56,7 +56,7 @@ namespace se
 		sem::Vector3 max;
 	};
 
-	struct CollisionComponent : Component<CollisionComponent>
+	struct CollisionComponent// : Component<CollisionComponent>
 	{
 
 	};

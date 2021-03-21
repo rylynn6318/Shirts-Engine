@@ -7,6 +7,11 @@ namespace se
 	{
 		glViewport(0, 0, width, height);
 	}
+
+	void mouse_callback(GLFWwindow* window, double xpos, double ypos)
+	{
+		
+	}
 }
 
 auto se::Renderer::init(int SCR_WIDTH, int SCR_HEIGHT)-> bool
@@ -27,7 +32,7 @@ auto se::Renderer::init(int SCR_WIDTH, int SCR_HEIGHT)-> bool
 
 	glfwMakeContextCurrent(window);
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
-	//glfwSetCursorPosCallback(window, mouse_callback);
+	glfwSetCursorPosCallback(window, mouse_callback);
 	//glfwSetScrollCallback(window, scroll_callback);
 
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
@@ -42,6 +47,11 @@ auto se::Renderer::init(int SCR_WIDTH, int SCR_HEIGHT)-> bool
 	glDepthFunc(GL_LESS); //default
 	glEnable(GL_STENCIL_TEST);
 
+	//textureShader.loadShader();
+	staticMeshShader.loadShader("../resource/shaders/4.6.model.vert.glsl", "../resource/shaders/4.6.model.frag.glsl");
+	//skeletalMeshShader.loadShader();
+
+
 	return true;
 }
 
@@ -53,7 +63,7 @@ auto se::Renderer::draw()->void
 	//텍스쳐
 
 	//스태틱메시
-
+	staticMeshShader.activeShader();
 	//스켈레탈메시
 
 	//조명

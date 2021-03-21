@@ -1,6 +1,7 @@
 #pragma once
 #include "glad/glad.h"
 #include "GLFW/glfw3.h"
+#include "shader/Shader.h"
 
 namespace se
 {
@@ -15,5 +16,8 @@ namespace se
 
 	private:
 		GLFWwindow* window;
+		Shader textureShader;
+		Shader staticMeshShader;
+		Shader skeletalMeshShader;
 	};
 }
