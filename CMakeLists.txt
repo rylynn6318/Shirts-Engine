@@ -44,6 +44,7 @@ set(ENGINE_SOURCE_FILES
 	"${ENGINE_SOURCE_DIR}/math/Math.cpp"
 	"${ENGINE_SOURCE_DIR}/component/CollisionComponent.cpp" 
 	"${ENGINE_SOURCE_DIR}/component/PhysicsComponent.cpp" 
+	"${ENGINE_SOURCE_DIR}/render/Renderer.cpp"
 )
 
 # Engine Target

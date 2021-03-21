@@ -2,7 +2,7 @@
 
 namespace sem = se::math;
 
-auto se::math::Vector3::getAsFloatPtr() const
+const float* se::math::Vector3::getAsFloatPtr() const
 {
 	return reinterpret_cast<const float*>(&x);
 }

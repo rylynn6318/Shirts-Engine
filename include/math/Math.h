@@ -1,12 +1,9 @@
 #pragma once
 #include <cmath>
 
-namespace sem = se::math;
-
-namespace se
+namespace se::math
 {
-namespace math
-{
+	namespace sem = se::math;
 	//linear interporation
 	inline float lerp(float a, float b, float f)
 	{
@@ -26,18 +23,10 @@ namespace math
 		explicit Vector3(float x, float y, float z) {}
 
 		// float pointer로 캐스팅
-		auto getAsFloatPtr() const
-		{
-			return reinterpret_cast<const float*>(&x);
-		}
+		const float* getAsFloatPtr() const;
 
 		// setter
-		auto setVector(float x, float y, float z)
-		{
-			this->x = x;
-			this->y = y;
-			this->z = z;
-		}
+		auto setVector(float x, float y, float z);
 
 		friend Vector3 operator+(const Vector3& a, const Vector3& b)
 		{
@@ -140,7 +129,7 @@ namespace math
 		static auto normalize(const Quaternion& q);
 		// Linear interpolation
 		static auto lerp(const Quaternion& a, const Quaternion& b, float f);
-		static auto dotProduct(const Quaternion& a, const Quaternion& b);
+		static float dotProduct(const Quaternion& a, const Quaternion& b);
 		// Spherical Linear Interpolation
 		static auto slerp(const Quaternion& a, const Quaternion& b, float f);
 		static auto concatenate(const Quaternion& q, const Quaternion& p);
@@ -192,5 +181,4 @@ namespace math
 
 		static const Matrix4 identity;
 	};
-}
 }
