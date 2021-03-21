@@ -23,7 +23,7 @@ int main()
 {
 	std::cout << "test start" << std::endl;
     auto setup_start = std::chrono::high_resolution_clock::now();
-    int nentities = 100000;
+    int nentities = 1000000;
 	se::EntityDB db;
 
     for (size_t i = 0; i < nentities; i++) {
@@ -37,14 +37,14 @@ int main()
     }
     float dt = 1.0 / 60;
 
-    db.addSystem([dt](PositionComponent* position, DirectionComponent* direction) {
-        position->x += direction->x * dt;
-        position->y += direction->y * dt;
+    db.addSystem([dt](PositionComponent& position, DirectionComponent& direction) {
+        position.x += direction.x * dt;
+        position.y += direction.y * dt;
     });
-    db.addSystem([](ComflabulationComponent* comflab) {
-        comflab->thingy *= 1.000001f;
-        comflab->mingy = !comflab->mingy;
-        comflab->dingy++;
+    db.addSystem([](ComflabulationComponent& comflab) {
+        comflab.thingy *= 1.000001f;
+        comflab.mingy = !comflab.mingy;
+        comflab.dingy++;
     });
 
     auto setup_finish = std::chrono::high_resolution_clock::now();
