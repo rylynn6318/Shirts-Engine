@@ -119,6 +119,7 @@ namespace se {
         class ComponentVector final : public ComponentVectorBase {
             struct ComponentID final {
                 std::size_t id{};
+                std::size_t recycleCounter = 0;
 
                 ComponentID() = default;
 
@@ -134,17 +135,36 @@ namespace se {
 
             // TODO : 컴포넌트 재활용 로직 추가해야함
             auto pushBack(Entity::ID eid, Component &&c) {
-                // components.reserve(components.size() + 1);
-                components.push_back(c);
-                cid_to_eid_map.push_back(eid);
-
-                auto cid = ComponentID{components.size() - 1};
+                ComponentID cid;
+                if (recycleComponents.empty())
+                {
+                    cid_to_eid_map.push_back(eid);
+                    components.push_back(c);
+                    cid = ComponentID{ components.size() - 1 };
+                }
+                else
+                {
+                    cid = recycleComponents.back();
+                    recycleComponents.pop_back();
+                    components[cid.id] = c;
+                }
 
                 eid_to_cid_map.emplace(eid, cid);
             }
 
             auto remove(Entity::ID eid) -> void override {
+                auto iter = eid_to_cid_map.find(eid);
+                if (iter != eid_to_cid_map.end())
+                {
+                    if (iter->first.recycle_counter != eid.recycle_counter)
+                        return;
 
+                    auto cid = iter->second;
+                    cid.recycleCounter++;
+                    recycleComponents.push_back(cid);
+
+                    eid_to_cid_map.erase(iter);
+                }
             }
 
             auto findComponentID(Entity::ID eid) -> std::optional<ComponentID> {
@@ -171,6 +191,7 @@ namespace se {
             std::vector<PureComponent> components;
             std::unordered_map<Entity::ID, ComponentID> eid_to_cid_map;
             std::vector<Entity::ID> cid_to_eid_map;
+            std::vector<ComponentID> recycleComponents;
 
             // mask 확인 해서 이미 존재가 확실한 경우에만 사용할 것
             auto unsafeFindComponentID(Entity::ID eid) -> ComponentID  {
