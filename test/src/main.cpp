@@ -50,7 +50,7 @@ int main()
     auto setup_finish = std::chrono::high_resolution_clock::now();
 
     auto sys_start = std::chrono::high_resolution_clock::now();
-	db.runSystems();
+    db.runAllSystems();
     auto sys_finish = std::chrono::high_resolution_clock::now();
 
     std::chrono::duration<double> setup_time = setup_finish - setup_start;

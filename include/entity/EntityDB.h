@@ -19,6 +19,7 @@ namespace se {
     // 거기에 대한 대비책도 있어야 하나??
     class EntityDB final {
     public:
+        // 사용자가 Entity::ID를 얻을 수 있는 유일한 함수
         auto createEntity() -> Entity::ID {
             if (recycleEntities.empty()) {
                 entities.emplace_back(Entity{Entity::ID{entities.size()}});
@@ -31,8 +32,8 @@ namespace se {
             }
         }
 
-        // TODO : move 해버린다던가 해서 해당 eid 소멸시켜서 더 이상 접근 못하게 하면 좋을듯
-        auto destroyEntity(Entity::ID eid) -> void {
+        // TODO : 파괴된 엔티티를 다시 쓰지 못하도록 일단 move를 통해 받게 했는데 더 좋은 아이디어가 있을까
+        auto destroyEntity(Entity::ID&& eid) -> void {
             recycleEntities.push_back(eid);
             auto e = entities[eid.index];
 
@@ -47,9 +48,8 @@ namespace se {
 
         template<component Component>
         auto addComponent(Entity::ID eid, Component &&c) {
-            using component_type = std::decay_t<Component>;
-            getComponentVector<component_type>()->pushBack(eid, std::forward<component_type>(c));
-            addMask<component_type>(entities[eid.index].mask);
+            getComponentVector<Component>()->pushBack(eid, std::forward<Component>(c));
+            addMask<Component>(entities[eid.index].mask);
         }
 
         template<component Component, component... Components>
@@ -64,18 +64,24 @@ namespace se {
             removeMask<Component>(entities[eid.index].mask);
         }
 
-        // TODO : Callable 타입 제한 둬야함
         template<typename Callable>
         auto addSystem(Callable callable) {
-            systems.push_back(std::make_unique<System < Callable>>
-            (callable, this));
+            systems.push_back(std::make_unique<System < Callable>>(callable, this));
         }
 
-        auto runSystems() -> void;
+        // TODO : 시스템 한번만 즉시 실행, 혹은 특정 시점(init() 등)에 실행할 수 있는 함수 하나 필요함
+        template<typename Callable>
+        auto visit(Callable callable) {
+            auto system = System(callable, this);
+            std::for_each(std::execution::par_unseq, entities.begin(), entities.end(), [&system](Entity &e) {
+                system->update(e);
+            });
+        }
+
+        auto runAllSystems() -> void;
 
     private:
         // ---- Utils ----
-        // TODO : 우측값 받아서 값 리턴하게 수정?
         template<component ... Cs>
         static auto addMask(boost::dynamic_bitset<> &mask) -> typename std::enable_if<(sizeof...(Cs) == 0)>::type {}
 
@@ -102,9 +108,13 @@ namespace se {
         struct ComponentVectorBase {
             virtual ~ComponentVectorBase() = default;
 
+            // destroyEntity() 때문에 필요함
             virtual auto remove(Entity::ID eid) -> void = 0;
         };
 
+        // ComponentVector 중
+        // private : 진짜 내부적으로만 사용.
+        // public : EntityDB 에서만 사용. 사용자에겐 노출되지 않음.
         template<component Component>
         class ComponentVector final : public ComponentVectorBase {
             struct ComponentID final {
@@ -137,11 +147,6 @@ namespace se {
 
             }
 
-            // TODO : 삭제된 엔티티의 컴포넌트와 존재하지 않는 cid를 파라메터로 넘긴 경우의 예외처리 필요함
-            auto findEntityID(ComponentID cid) -> Entity::ID {
-                return cid_to_eid_map[cid.id];
-            }
-
             auto findComponentID(Entity::ID eid) -> std::optional<ComponentID> {
                 auto cid = eid_to_cid_map.find(eid);
                 if (cid != eid_to_cid_map.end())
@@ -150,11 +155,14 @@ namespace se {
                     return std::nullopt;
             }
 
-            // TODO : 존재하지 않는 cid를 파라메터로 넘긴 경우의 예외처리 필요함
+            // EntityDB::unsafeGetComponent()에서 사용함
+            // 해당 eid에 대해 마스크 등으로 검증이 되었을 경우에만 사용할 것
             auto unsafeGetComponentPtr(Entity::ID eid) -> PureComponent * {
                 return &components[unsafeFindComponentID(eid).id];
             }
 
+            // EntityDB::unsafeGetComponent()에서 사용함
+            // 해당 eid에 대해 마스크 등으로 검증이 되었을 경우에만 사용할 것
             auto unsafeGetComponentRef(Entity::ID eid) -> PureComponent & {
                 return components[unsafeFindComponentID(eid).id];
             }
@@ -167,6 +175,11 @@ namespace se {
             // mask 확인 해서 이미 존재가 확실한 경우에만 사용할 것
             auto unsafeFindComponentID(Entity::ID eid) -> ComponentID  {
                 return eid_to_cid_map[eid];
+            }
+
+            // TODO : 삭제된 엔티티의 컴포넌트, 혹은 존재하지 않는 cid를 파라메터로 넘긴 경우의 예외처리 필요함
+            auto unsafeFindEntityID(ComponentID cid) -> Entity::ID {
+                return cid_to_eid_map[cid.id];
             }
         };
 
@@ -291,5 +304,7 @@ namespace se {
                 return com_vec->unsafeGetComponentRef(eid);
             }
         }
+
+        auto runSystem(std::unique_ptr<SystemBase>& system) -> void;
     };
 } // namespace se

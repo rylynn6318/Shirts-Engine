@@ -13,6 +13,10 @@ namespace se {
             auto operator==(ID const &) const -> bool;
             auto operator==(Entity &) -> bool;
 
+            ID& operator=(ID const &) = delete;
+            ID& operator=(ID &&) = delete;
+            ID(ID const &) = default;
+            ID(ID&&) = delete;
         private:
             std::size_t recycle_counter = 0;
             std::size_t const index;
@@ -24,8 +28,8 @@ namespace se {
 
         auto operator==(Entity &) -> bool;
         auto operator==(ID &) -> bool;
-    private:
 
+    private:
         ID id;
         boost::dynamic_bitset<> mask{};
 
