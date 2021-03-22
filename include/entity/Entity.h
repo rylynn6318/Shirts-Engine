@@ -13,8 +13,8 @@ namespace se {
             auto operator==(ID const &) const -> bool;
             auto operator==(Entity &) -> bool;
 
-            ID& operator=(ID const &) = default;
-            ID& operator=(ID &&) = default;
+            ID& operator=(ID const &) = delete;
+            ID& operator=(ID &&) = delete;
             ID(ID const &) = default;
             ID(ID&&) = default;
         private:

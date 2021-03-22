@@ -33,7 +33,7 @@ namespace se {
         }
 
         // TODO : 파괴된 엔티티를 다시 쓰지 못하도록 일단 move를 통해 받게 했는데 더 좋은 아이디어가 있을까
-        auto destroyEntity(Entity::ID&& eid) -> void {
+        auto destroyEntity(Entity::ID &&eid) -> void {
             recycleEntities.push_back(eid);
             auto e = entities[eid.index];
 
@@ -66,7 +66,8 @@ namespace se {
 
         template<typename Callable>
         auto addSystem(Callable callable) {
-            systems.push_back(std::make_unique<System < Callable>>(callable, this));
+            systems.push_back(std::make_unique<System < Callable>>
+            (callable, this));
         }
 
         // TODO : 시스템 한번만 즉시 실행, 혹은 특정 시점(init() 등)에 실행할 수 있는 함수 하나 필요함
@@ -125,7 +126,7 @@ namespace se {
 
                 explicit ComponentID(std::size_t id) : id(id) {};
 
-                auto operator==(ComponentID & cid) -> bool {
+                auto operator==(ComponentID &cid) -> bool {
                     return this->id == cid.id;
                 }
             };
@@ -136,16 +137,13 @@ namespace se {
             // TODO : 컴포넌트 재활용 로직 추가해야함
             auto pushBack(Entity::ID eid, Component &&c) {
                 ComponentID cid;
-                if (recycleComponents.empty())
-                {
+                if (recycle_components.empty()) {
                     cid_to_eid_map.push_back(eid);
                     components.push_back(c);
-                    cid = ComponentID{ components.size() - 1 };
-                }
-                else
-                {
-                    cid = recycleComponents.back();
-                    recycleComponents.pop_back();
+                    cid = ComponentID{components.size() - 1};
+                } else {
+                    cid = recycle_components.back();
+                    recycle_components.pop_back();
                     components[cid.id] = c;
                 }
 
@@ -154,14 +152,13 @@ namespace se {
 
             auto remove(Entity::ID eid) -> void override {
                 auto iter = eid_to_cid_map.find(eid);
-                if (iter != eid_to_cid_map.end())
-                {
+                if (iter != eid_to_cid_map.end()) {
                     if (iter->first.recycle_counter != eid.recycle_counter)
                         return;
 
                     auto cid = iter->second;
                     cid.recycleCounter++;
-                    recycleComponents.push_back(cid);
+                    recycle_components.push_back(cid);
 
                     eid_to_cid_map.erase(iter);
                 }
@@ -191,10 +188,10 @@ namespace se {
             std::vector<PureComponent> components;
             std::unordered_map<Entity::ID, ComponentID> eid_to_cid_map;
             std::vector<Entity::ID> cid_to_eid_map;
-            std::vector<ComponentID> recycleComponents;
+            std::vector<ComponentID> recycle_components;
 
             // mask 확인 해서 이미 존재가 확실한 경우에만 사용할 것
-            auto unsafeFindComponentID(Entity::ID eid) -> ComponentID  {
+            auto unsafeFindComponentID(Entity::ID eid) -> ComponentID {
                 return eid_to_cid_map[eid];
             }
 
@@ -239,7 +236,8 @@ namespace se {
         };
 
         template<typename Callable>
-        struct system_traits : public system_traits<decltype(&std::decay_t<Callable>::operator())> {};
+        struct system_traits : public system_traits<decltype(&std::decay_t<Callable>::operator())> {
+        };
 
         template<typename R, component ... Components>
         struct system_traits<R (*)(Components...)>
@@ -326,6 +324,6 @@ namespace se {
             }
         }
 
-        auto runSystem(std::unique_ptr<SystemBase>& system) -> void;
+        auto runSystem(std::unique_ptr<SystemBase> &system) -> void;
     };
 } // namespace se
