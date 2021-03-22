@@ -1,3 +1,5 @@
 #include "component/Component.h"
 
-se::Component::Component(){}
+namespace se {
+    std::size_t GroupIdCounter::id_counter = 0;
+}

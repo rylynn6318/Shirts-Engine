@@ -5,6 +5,8 @@ stb/20200203
 glm/0.9.9.8
 glew/2.2.0
 assimp/5.0.1
+boost/1.75.0
+range-v3/0.11.0
 
 [generators]
 cmake
