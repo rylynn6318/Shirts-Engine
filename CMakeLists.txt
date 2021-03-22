@@ -43,6 +43,7 @@ set(ENGINE_INCLUDE_FILES
         )
 
 set(ENGINE_SOURCE_DIR "${PROJECT_SOURCE_DIR}/src")
+
 set(ENGINE_SOURCE_FILES
         "${ENGINE_SOURCE_DIR}/component/Component.cpp"
         "${ENGINE_SOURCE_DIR}/entity/Entity.cpp"
@@ -59,6 +60,7 @@ set(ENGINE_SOURCE_FILES
 
 # debug
 add_compile_options(-g -ggdb)
+
 
 # Engine Target
 add_library(${ENGINE_TARGET} STATIC ${ENGINE_SOURCE_FILES} ${ENGINE_INCLUDE_FILES})
