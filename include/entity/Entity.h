@@ -13,10 +13,10 @@ namespace se {
             auto operator==(ID const &) const -> bool;
             auto operator==(Entity &) -> bool;
 
-            ID& operator=(ID const &) = delete;
-            ID& operator=(ID &&) = delete;
+            ID& operator=(ID const &) = default;
+            ID& operator=(ID &&) = default;
             ID(ID const &) = default;
-            ID(ID&&) = delete;
+            ID(ID&&) = default;
         private:
             std::size_t recycle_counter = 0;
             std::size_t const index;
