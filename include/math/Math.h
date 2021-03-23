@@ -121,18 +121,21 @@ namespace se::math
 			w = std::cosf(angle / 2.0f);
 		}
 
-		auto set(float x, float y, float z, float w);
-		auto conjugate();
-		auto getLengthSq() const;
-		auto getLength() const;
-		auto normalize();
-		static auto normalize(const Quaternion& q);
+		auto set(float x, float y, float z, float w)->void;
+		auto conjugate() -> void;
+		auto getLengthSq() const -> float;
+		auto getLength() const -> float;
+		auto normalize()->void;
+		static auto normalize(const Quaternion& q)->Quaternion;
 		// Linear interpolation
-		static auto lerp(const Quaternion& a, const Quaternion& b, float f);
-		static float dotProduct(const Quaternion& a, const Quaternion& b);
+		static auto lerp(const Quaternion& a, const Quaternion& b, float f)->Quaternion;
+		static auto dotProduct(const Quaternion& a, const Quaternion& b)->float;
 		// Spherical Linear Interpolation
-		static auto slerp(const Quaternion& a, const Quaternion& b, float f);
-		static auto concatenate(const Quaternion& q, const Quaternion& p);
+		static auto slerp(const Quaternion& a, const Quaternion& b, float f)->Quaternion;
+
+		//쿼터니언 곱
+		//q를 먼저 회전 후 p회전
+		static auto concatenate(const Quaternion& q, const Quaternion& p)->Quaternion;
 
 		static const Quaternion identity;
 	};

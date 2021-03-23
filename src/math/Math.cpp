@@ -65,7 +65,7 @@ auto se::math::Vector3::reflect(const Vector3& v, const Vector3& n)
 
 // Quaternion =============================================================================
 
-auto sem::Quaternion::set(float x, float y, float z, float w)
+auto sem::Quaternion::set(float x, float y, float z, float w)->void
 {
 	this->x = x;
 	this->y = y;
@@ -73,24 +73,24 @@ auto sem::Quaternion::set(float x, float y, float z, float w)
 	this->w = w;
 }
 
-auto sem::Quaternion::conjugate()
+auto sem::Quaternion::conjugate() -> void
 {
 	x *= -1.0f;
 	y *= -1.0f;
 	z *= -1.0f;
 }
 
-auto sem::Quaternion::getLengthSq() const
+auto sem::Quaternion::getLengthSq() const -> float
 {
 	return (x * x + y * y + z * z + w * w);
 }
 
-auto sem::Quaternion::getLength() const
+auto sem::Quaternion::getLength() const-> float
 {
 	return std::sqrtf(getLengthSq());
 }
 
-auto sem::Quaternion::normalize()
+auto sem::Quaternion::normalize()->void
 {
 	float length = getLength();
 	x /= length;
@@ -99,7 +99,7 @@ auto sem::Quaternion::normalize()
 	w /= length;
 }
 
-auto sem::Quaternion::normalize(const Quaternion& q)
+auto sem::Quaternion::normalize(const Quaternion& q)->Quaternion
 {
 	Quaternion retVal = q;
 	retVal.normalize();
@@ -107,7 +107,7 @@ auto sem::Quaternion::normalize(const Quaternion& q)
 }
 
 // Linear interpolation
-auto sem::Quaternion::lerp(const Quaternion& a, const Quaternion& b, float f)
+auto sem::Quaternion::lerp(const Quaternion& a, const Quaternion& b, float f)->Quaternion
 {
 	Quaternion retVal;
 	retVal.x = sem::lerp(a.x, b.x, f);
@@ -118,13 +118,13 @@ auto sem::Quaternion::lerp(const Quaternion& a, const Quaternion& b, float f)
 	return retVal;
 }
 
-static float dotProduct(const sem::Quaternion& a, const sem::Quaternion& b)
+static auto dotProduct(const sem::Quaternion& a, const sem::Quaternion& b)->float
 {
 	return a.x * b.x + a.y * b.y + a.z * b.z + a.w * b.w;
 }
 
 // Spherical Linear Interpolation
-auto sem::Quaternion::slerp(const Quaternion& a, const Quaternion& b, float f)
+auto sem::Quaternion::slerp(const Quaternion& a, const Quaternion& b, float f)->Quaternion
 {
 	float rawCosm = Quaternion::dotProduct(a, b);
 
@@ -163,7 +163,7 @@ auto sem::Quaternion::slerp(const Quaternion& a, const Quaternion& b, float f)
 	return retVal;
 }
 
-auto sem::Quaternion::concatenate(const Quaternion& q, const Quaternion& p)
+auto sem::Quaternion::concatenate(const Quaternion& q, const Quaternion& p)->Quaternion
 {
 	Quaternion retVal;
 
