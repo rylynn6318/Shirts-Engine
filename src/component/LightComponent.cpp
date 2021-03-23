@@ -1,0 +1,1 @@
+#include "component/LightComponent.h"
