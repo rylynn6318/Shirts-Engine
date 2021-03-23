@@ -10,9 +10,9 @@ namespace se
 	{
 		STATIC,
 		MOVABLE
-	};
+	}; 
 
-	struct LightComponent //: Component<LightComponent>
+	struct LightProperty
 	{
 		float intensity; 
 		sem::Vector3 color;
@@ -21,21 +21,24 @@ namespace se
 		LightMobility lightMobility = LightMobility::STATIC;
 	};
 
-	struct DirectionalLightComponent : LightComponent
+	struct DirectionalLightComponent final : Component<DirectionalLightComponent>
 	{
+		LightProperty lightProperty;
 		sem::Vector3 directionColor;
 		sem::Vector3 diffuseColor;
 		sem::Vector3 specularColor;
 	};
 
-	struct SpotLightComponent : LightComponent
+	struct SpotLightComponent final : Component<SpotLightComponent>
 	{
+		LightProperty lightProperty;
 		float coneAngle;
 		float attenuationRadius;
 	};
 
-	struct PointLightComponent : LightComponent
+	struct PointLightComponent final : Component<PointLightComponent>
 	{
+		LightProperty lightProperty;
 		float attenuationRadius;
 	};
 }
