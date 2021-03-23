@@ -294,7 +294,7 @@ sem::Matrix4 se::math::operator*(const Matrix4& a, const Matrix4& b)
 	return retVal;
 }
 
-auto sem::Matrix4::Invert()
+auto sem::Matrix4::invert()->void
 {
 	float tmp[12];
 	float src[16];

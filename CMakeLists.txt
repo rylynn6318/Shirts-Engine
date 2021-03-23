@@ -54,7 +54,7 @@ set(ENGINE_SOURCE_FILES
         "${ENGINE_SOURCE_DIR}/component/TransformComponent.cpp"
 	    "${ENGINE_SOURCE_DIR}/render/Renderer.cpp"
 	    "${ENGINE_SOURCE_DIR}/component/LightComponent.cpp"
-
+        "${ENGINE_SOURCE_DIR}/shader/Shader.cpp"
 #        "${ENGINE_SOURCE_DIR}/shader/Shader.cpp"
 #        "${ENGINE_SOURCE_DIR}/core/Game.cpp"
 #        "${ENGINE_SOURCE_DIR}/render/VertexArray.cpp"

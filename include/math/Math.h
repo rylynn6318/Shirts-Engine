@@ -160,8 +160,8 @@ namespace se::math
 		const float* getAsFloatPtr() const;
 		friend Matrix4 operator*(const Matrix4& a, const Matrix4& b);
 		Matrix4& operator*=(const Matrix4& right);
-		auto Invert();
 
+		auto invert()->void;
 		Vector3 getTranslation() const;
 		Vector3 getXAxis() const;
 		Vector3 getYAxis() const;

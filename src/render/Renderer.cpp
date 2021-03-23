@@ -72,3 +72,14 @@ auto se::Renderer::draw()->void
 	glfwSwapBuffers(window);
 	glfwPollEvents();
 }
+
+auto se::Renderer::setLightUniforms(se::Shader& shader, const sem::Matrix4& viewMat)->void
+{
+	sem::Matrix4 view = viewMat;
+	view.invert();
+	//shader.setVec3("cameraPos", view.getTranslation());
+	//shader.setVec3("uAmbientLight", ambientLight);
+	//shader.setVec3("uDirLight.mDirection", directionLight.direction);
+	//shader.setVec3("uDirLight.mDiffuseColor", directionLight.diffuseColor);
+	//shader.setVec3("uDirLight.mSpecColor", directionLight.specularColor);
+}

@@ -8,7 +8,6 @@ namespace sem = se::math;
 
 namespace se
 {
-	
 	class Renderer
 	{
 	public:
@@ -17,12 +16,16 @@ namespace se
 		auto init(int SCR_WIDTH, int SCR_HEIGHT)->bool;
 		auto draw()->void;
 		auto terminate()->void;
+		auto setLightUniforms(se::Shader& shader, const sem::Matrix4& viewMat)->void;
 
 	private:
 		GLFWwindow* window;
 		Shader textureShader;
 		Shader staticMeshShader;
 		Shader skeletalMeshShader;
+
+		sem::Matrix4 view;
+		sem::Matrix4 projection;
 
 		sem::Vector3 ambientLight;
 	};
