@@ -2,9 +2,13 @@
 #include "glad/glad.h"
 #include "GLFW/glfw3.h"
 #include "shader/Shader.h"
+#include "math/Math.h"
+
+namespace sem = se::math;
 
 namespace se
 {
+	
 	class Renderer
 	{
 	public:
@@ -19,5 +23,7 @@ namespace se
 		Shader textureShader;
 		Shader staticMeshShader;
 		Shader skeletalMeshShader;
+
+		sem::Vector3 ambientLight;
 	};
 }
