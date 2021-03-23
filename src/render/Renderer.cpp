@@ -62,10 +62,11 @@ auto se::Renderer::draw()->void
 
 	//텍스쳐
 
+	textureShader.activeShader();
 	//스태틱메시
 	staticMeshShader.activeShader();
 	//스켈레탈메시
-
+	skeletalMeshShader.activeShader();
 	//조명
 
 	glfwSwapBuffers(window);
