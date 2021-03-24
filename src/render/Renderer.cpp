@@ -43,30 +43,38 @@ auto se::Renderer::init(int SCR_WIDTH, int SCR_HEIGHT)-> bool
 		return false;
 	}
 
-	glEnable(GL_DEPTH_TEST);
-	glDepthFunc(GL_LESS); //default
-	glEnable(GL_STENCIL_TEST);
 
 	//textureShader.loadShader();
 	staticMeshShader.loadShader("../resource/shaders/4.6.model.vert.glsl", "../resource/shaders/4.6.model.frag.glsl");
-	//skeletalMeshShader.loadShader();
-
-
+	staticModel.loadModel("../resource/model/backpack/backpack.obj");
 	return true;
 }
 
 auto se::Renderer::draw()->void
 {
+	glEnable(GL_DEPTH_TEST);
+
 	glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	//텍스쳐
 
-	textureShader.activeShader();
+	//textureShader.activeShader();
 	//스태틱메시
 	staticMeshShader.activeShader();
+	glm::mat4 projection = glm::perspective(glm::radians(80.0f), (float)1200 / (float)800, 0.1f, 1000.0f);
+	glm::mat4 view = glm::lookAt(glm::vec3(0,0,5), glm::vec3(0,0,3) + glm::vec3(0, 0, -1), glm::vec3(0, 1, 0));
+	staticMeshShader.setMat4("projection", projection);
+	staticMeshShader.setMat4("view", view);
+
+	// render the loaded model
+	glm::mat4 model = glm::mat4(1.0f);
+	model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f)); // translate it down so it's at the center of the scene
+	model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));	// it's a bit too big for our scene, so scale it down
+	staticMeshShader.setMat4("model", model);
+	staticModel.draw(staticMeshShader);
 	//스켈레탈메시
-	skeletalMeshShader.activeShader();
+	//skeletalMeshShader.activeShader();
 	//조명
 
 	glfwSwapBuffers(window);
