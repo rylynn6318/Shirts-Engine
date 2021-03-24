@@ -40,7 +40,7 @@ namespace se
 		auto setMat3(const char* name, const glm::mat3& mat) const -> void;
 		auto setMat4(const char* name, const glm::mat4& mat) const -> void;
 
-		GLuint getProgram() const { return shaderProgram; }
+		GLuint getShader() const { return shaderProgram; }
 	private:
 		auto compileShader(const char* file)->bool;
 		auto checkCompileErrors(unsigned int shader, const ShaderType& type) -> void;
