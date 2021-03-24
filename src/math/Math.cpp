@@ -118,7 +118,7 @@ auto sem::Quaternion::lerp(const Quaternion& a, const Quaternion& b, float f)->Q
 	return retVal;
 }
 
-static auto dotProduct(const sem::Quaternion& a, const sem::Quaternion& b)->float
+auto sem::Quaternion::dotProduct(const sem::Quaternion& a, const sem::Quaternion& b)->float
 {
 	return a.x * b.x + a.y * b.y + a.z * b.z + a.w * b.w;
 }
@@ -594,4 +594,12 @@ sem::Matrix4 sem::Matrix4::createSimpleViewProj(float width, float height)
 	return Matrix4(temp);
 }
 
-const sem::Matrix4 identity;
+static float m4Ident[4][4] =
+{
+	{ 1.0f, 0.0f, 0.0f, 0.0f },
+	{ 0.0f, 1.0f, 0.0f, 0.0f },
+	{ 0.0f, 0.0f, 1.0f, 0.0f },
+	{ 0.0f, 0.0f, 0.0f, 1.0f }
+};
+
+const sem::Matrix4 sem::Matrix4::identity(m4Ident);
