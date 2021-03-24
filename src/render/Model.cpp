@@ -363,7 +363,7 @@ auto se::Model::loadMaterialTextures(aiMaterial* mat, aiTextureType type, std::s
 			Texture texture;
 			std::string fileName = std::string(str.C_Str());
 			fileName = directory + '/' + fileName;
-			texture.textureID = textureFromFile(str.C_Str(), this->directory, false);
+			texture.ID = textureFromFile(str.C_Str(), this->directory, false);
 			texture.type = typeName;
 			texture.path = str.C_Str();
 			textures.push_back(texture);
