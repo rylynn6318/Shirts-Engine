@@ -17,7 +17,7 @@ namespace se
 	public:
 		StaticModel() {}
 		~StaticModel() = default;
-		std::vector<se::Texture> texturesLoaded;	
+		std::vector<Texture> texturesLoaded;	
 		std::vector<Mesh>  meshes;
 		std::string directory;
 		bool gammaCorrection;
