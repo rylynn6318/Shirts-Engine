@@ -66,7 +66,9 @@ set(ENGINE_SOURCE_FILES
         )
 
 # debug
-add_compile_options(-g -ggdb)
+if(!WIN32)
+    add_compile_options(-g -ggdb)
+endif()
 
 
 # Engine Target
