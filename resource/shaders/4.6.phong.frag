@@ -6,7 +6,7 @@ in vec3 fragWorldPos;
 
 out vec4 outColor;
 
-uniform sampler2D uTexture;
+uniform sampler2D texture_diffuse1;
 
 struct DirectionalLight
 {
@@ -36,5 +36,5 @@ void main()
 		Phong += Diffuse + Specular;
 	}
 
-    outColor = texture(uTexture, fragTexCoord) * vec4(Phong, 1.0f);
+    outColor = texture(texture_diffuse1, fragTexCoord) * vec4(Phong, 1.0f);
 }

@@ -44,8 +44,8 @@ auto se::Renderer::init(int SCR_WIDTH, int SCR_HEIGHT)-> bool
 	}
 
 
-	//textureShader.loadShader();
-	staticMeshShader.loadShader("../resource/shaders/4.6.model.vert.glsl", "../resource/shaders/4.6.model.frag.glsl");
+	staticMeshShader.loadShader("../resource/shaders/4.6.phong.vert", "../resource/shaders/4.6.phong.frag");
+	//staticMeshShader.loadShader("../resource/shaders/4.6.model.vert.glsl", "../resource/shaders/4.6.model.frag.glsl");
 	staticModel.loadModel("../resource/model/backpack/backpack.obj");
 	return true;
 }
@@ -63,15 +63,16 @@ auto se::Renderer::draw()->void
 	//스태틱메시
 	staticMeshShader.activeShader();
 	glm::mat4 projection = glm::perspective(glm::radians(80.0f), (float)1200 / (float)800, 0.1f, 1000.0f);
-	glm::mat4 view = glm::lookAt(glm::vec3(0,0,5), glm::vec3(0,0,3) + glm::vec3(0, 0, -1), glm::vec3(0, 1, 0));
-	staticMeshShader.setMat4("projection", projection);
-	staticMeshShader.setMat4("view", view);
+	glm::mat4 view = glm::lookAt(glm::vec3(0,0,5), glm::vec3(0,0,0), glm::vec3(0, 1, 0));
+	//staticMeshShader.setMat4("projection", projection);
+	//staticMeshShader.setMat4("view", view);
+	staticMeshShader.setMat4("uViewProj", projection * view);
+	staticMeshShader.setMat4("uWorldTransform", glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f)));
+	//staticMeshShader.setMat4("uWorldTransform", glm::rotate(glm::mat4(1.0f), 45.0f, glm::vec3(1.0f)));
+	staticMeshShader.setFloat("uSpecPower", 10.0f);     
 
-	// render the loaded model
-	glm::mat4 model = glm::mat4(1.0f);
-	model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f)); // translate it down so it's at the center of the scene
-	model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));	// it's a bit too big for our scene, so scale it down
-	staticMeshShader.setMat4("model", model);
+	setLightUniforms(staticMeshShader);
+
 	staticModel.draw(staticMeshShader);
 	//스켈레탈메시
 	//skeletalMeshShader.activeShader();
@@ -90,4 +91,13 @@ auto se::Renderer::setLightUniforms(se::Shader& shader, const sem::Matrix4& view
 	//shader.setVec3("uDirLight.mDirection", directionLight.direction);
 	//shader.setVec3("uDirLight.mDiffuseColor", directionLight.diffuseColor);
 	//shader.setVec3("uDirLight.mSpecColor", directionLight.specularColor);
+}
+
+auto se::Renderer::setLightUniforms(se::Shader& shader)->void
+{
+	shader.setVec3("cameraPos", glm::vec3(0, 0, 5));
+	shader.setVec3("uAmbientLight", glm::vec3(0.2f, 0.2f, 0.2f));
+	shader.setVec3("uDirLight.mDirection", glm::vec3(0.0f, -0.707f, -0.707f));
+	shader.setVec3("uDirLight.mDiffuseColor", glm::vec3(0.0f, 1.0f, 0.0f));
+	shader.setVec3("uDirLight.mSpecColor", glm::vec3(0.5f, 1.0f, 0.5f));
 }

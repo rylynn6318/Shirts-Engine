@@ -153,4 +153,7 @@ auto se::Shader::setMat4(const char* name, const glm::mat4& mat) const -> void
 {
     glUniformMatrix4fv(glGetUniformLocation(shaderProgram, name), 1, GL_FALSE, &mat[0][0]);
 }
-
+auto se::Shader::setMat4(const char* name, const sem::Matrix4& mat) const -> void
+{
+    glUniformMatrix4fv(glGetUniformLocation(shaderProgram, name), 1, GL_FALSE, mat.getAsFloatPtr());
+}

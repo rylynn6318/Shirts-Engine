@@ -39,6 +39,7 @@ namespace se
 		auto setMat2(const char* name, const glm::mat2& mat) const -> void;
 		auto setMat3(const char* name, const glm::mat3& mat) const -> void;
 		auto setMat4(const char* name, const glm::mat4& mat) const -> void;
+		auto setMat4(const char* name, const sem::Matrix4& mat) const -> void;
 
 		GLuint getShader() const { return shaderProgram; }
 	private:

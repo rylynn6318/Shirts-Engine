@@ -20,6 +20,7 @@ namespace se
 		auto draw()->void;
 		auto terminate()->void;
 		auto setLightUniforms(se::Shader& shader, const sem::Matrix4& viewMat)->void;
+		auto setLightUniforms(se::Shader& shader)->void;
 
 	private:
 		GLFWwindow* window;
