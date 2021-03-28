@@ -6,7 +6,7 @@ namespace sem = se::math;
 
 namespace se
 {
-	struct PhysicsComponent// : Component<PhysicsComponent>
+	struct PhysicsComponent : Component<PhysicsComponent>
 	{
 		float mass;
 		sem::Vector3 velocity;
