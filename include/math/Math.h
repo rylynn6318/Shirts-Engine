@@ -1,5 +1,6 @@
 #pragma once
 #include <cmath>
+#include <cstring>
 
 namespace se::math
 {
@@ -114,11 +115,11 @@ namespace se::math
 
 		explicit Quaternion(const Vector3& axis, float angle)
 		{
-			float scalar = std::sinf(angle / 2.0f);
+			float scalar = sinf(angle / 2.0f);
 			x = axis.x * scalar;
 			y = axis.y * scalar;
 			z = axis.z * scalar;
-			w = std::cosf(angle / 2.0f);
+			w = cosf(angle / 2.0f);
 		}
 
 		auto set(float x, float y, float z, float w)->void;

@@ -21,7 +21,7 @@ auto se::math::Vector3::lengthSq() const
 
 auto se::math::Vector3::getLength() const
 {
-	return (std::sqrt(lengthSq()));
+	return (sqrt(lengthSq()));
 }
 
 auto se::math::Vector3::normalize()
@@ -87,7 +87,7 @@ auto sem::Quaternion::getLengthSq() const -> float
 
 auto sem::Quaternion::getLength() const-> float
 {
-	return std::sqrtf(getLengthSq());
+	return sqrtf(getLengthSq());
 }
 
 auto sem::Quaternion::normalize()->void
@@ -138,10 +138,10 @@ auto sem::Quaternion::slerp(const Quaternion& a, const Quaternion& b, float f)->
 
 	if (cosom < 0.9999f)
 	{
-		const float omega = std::acosf(cosom);
-		const float invSin = 1.f / std::sinf(omega);
-		scale0 = std::sinf((1.f - f) * omega) * invSin;
-		scale1 = std::sinf(f * omega) * invSin;
+		const float omega = acosf(cosom);
+		const float invSin = 1.f / sinf(omega);
+		scale0 = sinf((1.f - f) * omega) * invSin;
+		scale1 = sinf(f * omega) * invSin;
 	}
 	else
 	{
@@ -462,8 +462,8 @@ sem::Matrix4 sem::Matrix4::createRotationX(float theta)
 	float temp[4][4] =
 	{
 		{ 1.0f, 0.0f, 0.0f , 0.0f },
-		{ 0.0f, std::cosf(theta), std::sinf(theta), 0.0f },
-		{ 0.0f, -std::sinf(theta), std::cosf(theta), 0.0f },
+		{ 0.0f, cosf(theta), sinf(theta), 0.0f },
+		{ 0.0f, -sinf(theta), cosf(theta), 0.0f },
 		{ 0.0f, 0.0f, 0.0f, 1.0f },
 	};
 	return Matrix4(temp);
@@ -474,9 +474,9 @@ sem::Matrix4 sem::Matrix4::createRotationY(float theta)
 {
 	float temp[4][4] =
 	{
-		{ std::cosf(theta), 0.0f, -std::sinf(theta), 0.0f },
+		{ cosf(theta), 0.0f, -sinf(theta), 0.0f },
 		{ 0.0f, 1.0f, 0.0f, 0.0f },
-		{ std::sinf(theta), 0.0f, std::cosf(theta), 0.0f },
+		{ sinf(theta), 0.0f, cosf(theta), 0.0f },
 		{ 0.0f, 0.0f, 0.0f, 1.0f },
 	};
 	return Matrix4(temp);
@@ -487,8 +487,8 @@ sem::Matrix4 sem::Matrix4::createRotationZ(float theta)
 {
 	float temp[4][4] =
 	{
-		{ std::cosf(theta), std::sinf(theta), 0.0f, 0.0f },
-		{ -std::sinf(theta), std::cosf(theta), 0.0f, 0.0f },
+		{ cosf(theta), sinf(theta), 0.0f, 0.0f },
+		{ -sinf(theta), cosf(theta), 0.0f, 0.0f },
 		{ 0.0f, 0.0f, 1.0f, 0.0f },
 		{ 0.0f, 0.0f, 0.0f, 1.0f },
 	};
@@ -569,7 +569,7 @@ sem::Matrix4 sem::Matrix4::createOrtho(float width, float height, float near, fl
 
 sem::Matrix4 sem::Matrix4::createPerspectiveFOV(float fovY, float width, float height, float near, float far)
 {
-	float yScale = (1.0f / std::tanf(fovY / 2.0f));
+	float yScale = (1.0f / tanf(fovY / 2.0f));
 	float xScale = yScale * height / width;
 	float temp[4][4] =
 	{
