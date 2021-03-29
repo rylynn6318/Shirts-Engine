@@ -18,7 +18,7 @@ namespace se
 	public:
 		Shader();
 		~Shader();
-		auto loadShader(const const char* vertPath, const const char* fragPath)->void;
+		auto loadShader(const char* vertPath, const char* fragPath)->void;
 		auto unLoadShader()->void;
 		auto activeShader()->void;
 
