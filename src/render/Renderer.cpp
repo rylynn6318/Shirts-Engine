@@ -1,6 +1,6 @@
 #include "render/Renderer.h"
 #include <iostream>
-
+#include <chrono>
 namespace se
 {
 	void framebuffer_size_callback(GLFWwindow* window, int width, int height)
@@ -62,17 +62,21 @@ auto se::Renderer::draw()->void
 	//textureShader.activeShader();
 	//스태틱메시
 	staticMeshShader.activeShader();
-	glm::mat4 projection = glm::perspective(glm::radians(80.0f), (float)1200 / (float)800, 0.1f, 1000.0f);
+	glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)1200 / (float)800, 0.1f, 1000.0f);
 	glm::mat4 view = glm::lookAt(glm::vec3(0,0,5), glm::vec3(0,0,0), glm::vec3(0, 1, 0));
-	//staticMeshShader.setMat4("projection", projection);
-	//staticMeshShader.setMat4("view", view);
+
+	//MVP,계산은 역순
 	staticMeshShader.setMat4("uViewProj", projection * view);
-	staticMeshShader.setMat4("uWorldTransform", glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f)));
-	//staticMeshShader.setMat4("uWorldTransform", glm::rotate(glm::mat4(1.0f), 45.0f, glm::vec3(1.0f)));
-	staticMeshShader.setFloat("uSpecPower", 10.0f);     
+
+	//TRS,트랜스폼 적용
+	glm::mat4 transform = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f));
+	//transform = glm::rotate(transform, glm::radians(45.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+	transform = glm::scale(transform, glm::vec3(0.5f, 0.5f, 0.5f));
+	staticMeshShader.setMat4("uWorldTransform", transform);
+
+	staticMeshShader.setFloat("uSpecPower", 128.0f);  
 
 	setLightUniforms(staticMeshShader);
-
 	staticModel.draw(staticMeshShader);
 	//스켈레탈메시
 	//skeletalMeshShader.activeShader();
@@ -96,8 +100,8 @@ auto se::Renderer::setLightUniforms(se::Shader& shader, const sem::Matrix4& view
 auto se::Renderer::setLightUniforms(se::Shader& shader)->void
 {
 	shader.setVec3("cameraPos", glm::vec3(0, 0, 5));
-	shader.setVec3("uAmbientLight", glm::vec3(0.2f, 0.2f, 0.2f));
-	shader.setVec3("uDirLight.mDirection", glm::vec3(0.0f, -0.707f, -0.707f));
-	shader.setVec3("uDirLight.mDiffuseColor", glm::vec3(0.0f, 1.0f, 0.0f));
-	shader.setVec3("uDirLight.mSpecColor", glm::vec3(0.5f, 1.0f, 0.5f));
+	shader.setVec3("uAmbientLight", glm::vec3(0.4f, 0.4f, 0.4f));
+	shader.setVec3("uDirLight.direction", glm::vec3(0.7f * sin(glfwGetTime()), 0.7f, 0.7f * cos(glfwGetTime())));
+	shader.setVec3("uDirLight.diffuseColor", glm::vec3(1.0f, 0.0f, 0.0f));
+	shader.setVec3("uDirLight.specColor", glm::vec3(0.5f, 1.0f, 0.5f));
 }

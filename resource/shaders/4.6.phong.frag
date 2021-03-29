@@ -16,8 +16,8 @@ struct DirectionalLight
 };
 
 uniform vec3 uCameraPos;
-uniform float uSpecPower;
-uniform vec3 uAmbientLight;
+uniform float uSpecPower = 32;
+uniform vec3 uAmbientLight = vec3(0.2f, 0.2f, 0.2f);
 uniform DirectionalLight uDirLight;
 
 void main()
