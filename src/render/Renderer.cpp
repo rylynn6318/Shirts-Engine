@@ -46,14 +46,15 @@ auto se::Renderer::init(int SCR_WIDTH, int SCR_HEIGHT)-> bool
 
 	staticMeshShader.loadShader("../resource/shaders/4.6.phong.vert", "../resource/shaders/4.6.phong.frag");
 	//staticMeshShader.loadShader("../resource/shaders/4.6.model.vert.glsl", "../resource/shaders/4.6.model.frag.glsl");
-	staticModel.loadModel("../resource/model/backpack/backpack.obj");
+	staticModel.loadModel("../resource/model/GrassBlock/Grass_Block.obj");
 	return true;
 }
 
 auto se::Renderer::draw()->void
 {
 	glEnable(GL_DEPTH_TEST);
-
+	glDepthFunc(GL_LESS);
+	glEnable(GL_CULL_FACE);
 	glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -63,15 +64,15 @@ auto se::Renderer::draw()->void
 	//스태틱메시
 	staticMeshShader.activeShader();
 	glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)1200 / (float)800, 0.1f, 1000.0f);
-	glm::mat4 view = glm::lookAt(glm::vec3(0,0,5), glm::vec3(0,0,0), glm::vec3(0, 1, 0));
+	glm::mat4 view = glm::lookAt(glm::vec3(5,5,5), glm::vec3(0,0,0), glm::vec3(0, 1, 0));
 
 	//MVP,계산은 역순
 	staticMeshShader.setMat4("uViewProj", projection * view);
 
 	//TRS,트랜스폼 적용
 	glm::mat4 transform = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f));
-	//transform = glm::rotate(transform, glm::radians(45.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-	transform = glm::scale(transform, glm::vec3(0.5f, 0.5f, 0.5f));
+	//transform = glm::rotate(transform, glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 0.0f));
+	transform = glm::scale(transform, glm::vec3(1.0f, 1.0f, 1.0f));
 	staticMeshShader.setMat4("uWorldTransform", transform);
 
 	staticMeshShader.setFloat("uSpecPower", 128.0f);  
@@ -99,7 +100,7 @@ auto se::Renderer::setLightUniforms(se::Shader& shader, const sem::Matrix4& view
 
 auto se::Renderer::setLightUniforms(se::Shader& shader)->void
 {
-	shader.setVec3("cameraPos", glm::vec3(0, 0, 5));
+	shader.setVec3("cameraPos", glm::vec3(5, 5, 5));
 	shader.setVec3("uAmbientLight", glm::vec3(0.4f, 0.4f, 0.4f));
 	shader.setVec3("uDirLight.direction", glm::vec3(0.7f * sin(glfwGetTime()), 0.7f, 0.7f * cos(glfwGetTime())));
 	shader.setVec3("uDirLight.diffuseColor", glm::vec3(1.0f, 0.0f, 0.0f));
