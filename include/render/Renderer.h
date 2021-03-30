@@ -30,6 +30,10 @@ namespace se
 		Shader staticMeshShader;
 		Shader skeletalMeshShader;
 
+		GLuint testVAO;
+		GLuint testVBO;
+		GLuint testTexture;
+
 		StaticModel staticModel;
 
 		sem::Matrix4 view;
