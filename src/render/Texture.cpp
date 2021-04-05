@@ -1,9 +1,10 @@
 #include "render/Texture.h"
+#include "glad/glad.h"
 #include <iostream>
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 
-se::Texture::Texture() : texture(0), width(0), height(0)
+se::Texture::Texture() : ID(0), width(0), height(0)
 {
 
 }
@@ -17,8 +18,8 @@ se::Texture::~Texture()
 bool se::Texture::loadTexture(const char* fileName)
 {
 	int channels = 0;
-	glGenTextures(1, &texture);
-	glBindTexture(GL_TEXTURE_2D, texture);
+	glGenTextures(1, &ID);
+	glBindTexture(GL_TEXTURE_2D, ID);
 
 	//backpack은 이부분 반대로
 	stbi_set_flip_vertically_on_load(false); 
@@ -34,7 +35,7 @@ bool se::Texture::loadTexture(const char* fileName)
 		else if (channels == 4)
 			format = GL_RGBA;
 
-		glBindTexture(GL_TEXTURE_2D, texture);
+		glBindTexture(GL_TEXTURE_2D, ID);
 		glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
 		glGenerateMipmap(GL_TEXTURE_2D);
 
@@ -55,10 +56,10 @@ bool se::Texture::loadTexture(const char* fileName)
 
 void se::Texture::activeTexture()
 {
-	glBindTexture(GL_TEXTURE_2D, texture);
+	glBindTexture(GL_TEXTURE_2D, ID);
 }
 
 void se::Texture::unLoadTexture()
 {
-	glDeleteTextures(1, &texture);
+	glDeleteTextures(1, &ID);
 }

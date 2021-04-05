@@ -1,5 +1,4 @@
 #pragma once
-#include "glad/glad.h"
 #include <string>
 
 namespace se
@@ -13,7 +12,7 @@ namespace se
 		bool loadTexture(const char* fileName);
 		void unLoadTexture();
 		void activeTexture();
-		GLuint getTexture() const { return texture; }
+		GLuint getTexture() const { return ID; }
 
 	public:
 		std::string path;
