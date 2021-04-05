@@ -79,6 +79,22 @@ auto se::Renderer::draw()->void
 
 	setLightUniforms(staticMeshShader);
 	staticModel.draw(staticMeshShader);
+
+	transform = glm::translate(glm::mat4(1.0f), glm::vec3(2.0f, 0.0f, 0.0f));
+	transform = glm::scale(transform, glm::vec3(1.0f, 1.0f, 1.0f));
+	staticMeshShader.setMat4("uWorldTransform", transform);
+	staticModel.draw(staticMeshShader);
+
+	transform = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 2.0f));
+	transform = glm::scale(transform, glm::vec3(1.0f, 1.0f, 1.0f));
+	staticMeshShader.setMat4("uWorldTransform", transform);
+	staticModel.draw(staticMeshShader);
+
+	transform = glm::translate(glm::mat4(1.0f), glm::vec3(2.0f, 0.0f, 2.0f));
+	transform = glm::scale(transform, glm::vec3(1.0f, 1.0f, 1.0f));
+	staticMeshShader.setMat4("uWorldTransform", transform);
+	staticModel.draw(staticMeshShader);
+
 	//스켈레탈메시
 	//skeletalMeshShader.activeShader();
 	//조명

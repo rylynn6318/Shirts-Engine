@@ -32,6 +32,7 @@ namespace se
 
 		GLuint testVAO;
 		GLuint testVBO;
+		GLuint testEBO;
 		GLuint testTexture;
 
 		StaticModel staticModel;
