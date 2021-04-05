@@ -15,7 +15,7 @@ namespace se
 	class StaticModel
 	{
 	public:
-		StaticModel() {}
+		StaticModel() = default;
 		~StaticModel() = default;
 		std::vector<Texture> texturesLoaded;	
 		std::vector<Mesh>  meshes;
@@ -25,8 +25,9 @@ namespace se
 		StaticModel(const std::string& path, bool gamma);
 		auto draw(Shader& shader)->void;
 
-	//private:
+	
 		auto loadModel(const std::string& path)->void;
+	private:
 		auto processNode(aiNode* node, const aiScene* scene)->void;
 		auto processMesh(aiMesh* mesh, const aiScene* scene)->Mesh;
 		auto loadMaterialTextures(aiMaterial* mat, aiTextureType type, std::string typeName)->std::vector<Texture>;
