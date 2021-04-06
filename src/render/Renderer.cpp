@@ -174,6 +174,7 @@ auto se::Renderer::draw()->void
 	glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+	//MVP 구하기
 
 	glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)1200 / (float)800, 0.1f, 1000.0f);
 	//glm::mat4 view = glm::lookAt(camera.Position, glm::vec3(2, 2, 2), glm::vec3(0, 1, 0));
@@ -181,6 +182,8 @@ auto se::Renderer::draw()->void
 	glm::mat4 model = glm::mat4(1.0f);
 	model = glm::translate(model, glm::vec3(5.0f, 10.0f, 0.0f));
 
+
+	//텍스쳐
 	textureShader.activeShader();
 	textureShader.setInt("texture1", 0);
 	textureShader.setMat4("uView", view);
@@ -197,9 +200,7 @@ auto se::Renderer::draw()->void
 	glBindVertexArray(0);
 
 
-	//스태틱메시
-
-
+	//스태틱 메시
 
 	//MVP,계산은 역순
 	staticMeshShader.activeShader();
@@ -231,14 +232,12 @@ auto se::Renderer::draw()->void
 	staticMeshShader.setMat4("uWorldTransform", transform);
 	staticModel.draw(staticMeshShader);
 
-	
-
-	// draw skybox as last
+	//스카이 박스
 	glDepthFunc(GL_LEQUAL); 
 	skyboxShader.activeShader();
 	skyboxShader.setMat4("uView", view);
 	skyboxShader.setMat4("uProj", projection);
-	// skybox cube
+
 	glBindVertexArray(skyboxVAO);
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_CUBE_MAP, skyboxTexture);
