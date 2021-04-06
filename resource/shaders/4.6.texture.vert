@@ -12,5 +12,5 @@ uniform mat4 uModel;
 void main()
 {
 	gl_Position = uProj* uView * uModel * vec4(inPosition, 1.0);
-	TexCoord = vec2(inTexCoord.x, inTexCoord.y);
+	TexCoord = inTexCoord;
 }
