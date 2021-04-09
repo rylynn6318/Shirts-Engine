@@ -48,6 +48,6 @@ namespace se
 
 		GLuint shaderProgram;
 		GLuint fragmentShader;
-		GLuint vertextShader;
+		GLuint vertexShader;
 	};
 }

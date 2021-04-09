@@ -199,54 +199,60 @@ auto se::Renderer::draw()->void
 	glDrawArrays(GL_TRIANGLES, 0, 6);
 	glBindVertexArray(0);
 
+    //스태틱 메시
+    drawStaticMesh(projection, view);
 
-	//스태틱 메시
+    //스카이 박스
+    drawSkybox(projection, view);
 
-	//MVP,계산은 역순
-	staticMeshShader.activeShader();
-	staticMeshShader.setMat4("uViewProj", projection * view);
-
-	//TRS,트랜스폼 적용
-	glm::mat4 transform = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f));
-	//transform = glm::rotate(transform, glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 0.0f));
-	transform = glm::scale(transform, glm::vec3(1.0f, 1.0f, 1.0f));
-	staticMeshShader.setMat4("uWorldTransform", transform);
-
-	staticMeshShader.setFloat("uSpecPower", 128.0f);
-
-	setLightUniforms(staticMeshShader);
-	staticModel.draw(staticMeshShader);
-
-	transform = glm::translate(glm::mat4(1.0f), glm::vec3(2.0f, 0.0f, 0.0f));
-	transform = glm::scale(transform, glm::vec3(1.0f, 1.0f, 1.0f));
-	staticMeshShader.setMat4("uWorldTransform", transform);
-	staticModel.draw(staticMeshShader);
-
-	transform = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 2.0f));
-	transform = glm::scale(transform, glm::vec3(1.0f, 1.0f, 1.0f));
-	staticMeshShader.setMat4("uWorldTransform", transform);
-	staticModel.draw(staticMeshShader);
-
-	transform = glm::translate(glm::mat4(1.0f), glm::vec3(2.0f, 0.0f, 2.0f));
-	transform = glm::scale(transform, glm::vec3(1.0f, 1.0f, 1.0f));
-	staticMeshShader.setMat4("uWorldTransform", transform);
-	staticModel.draw(staticMeshShader);
-
-	//스카이 박스
-	glDepthFunc(GL_LEQUAL); 
-	skyboxShader.activeShader();
-	skyboxShader.setMat4("uView", view);
-	skyboxShader.setMat4("uProj", projection);
-
-	glBindVertexArray(skyboxVAO);
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_CUBE_MAP, skyboxTexture);
-	glDrawArrays(GL_TRIANGLES, 0, 36);
-	glBindVertexArray(0);
-	glDepthFunc(GL_LESS);
-
-	glfwSwapBuffers(window);
+    glfwSwapBuffers(window);
 	glfwPollEvents();
+}
+
+void se::Renderer::drawSkybox(const glm::mat4 &projection, const glm::mat4 &view) {
+    glDepthFunc(GL_LEQUAL);
+    this->skyboxShader.activeShader();
+    this->skyboxShader.setMat4("uView", view);
+    this->skyboxShader.setMat4("uProj", projection);
+
+    glBindVertexArray(this->skyboxVAO);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, this->skyboxTexture);
+    glDrawArrays(GL_TRIANGLES, 0, 36);
+    glBindVertexArray(0);
+    glDepthFunc(GL_LESS);
+}
+
+void se::Renderer::drawStaticMesh(const glm::mat4 &projection, const glm::mat4 &view) {
+    //MVP,계산은 역순
+    this->staticMeshShader.activeShader();
+    this->staticMeshShader.setMat4("uViewProj", projection * view);
+
+    //TRS,트랜스폼 적용
+    glm::mat4 transform = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f));
+    //transform = glm::rotate(transform, glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 0.0f));
+    transform = glm::scale(transform, glm::vec3(1.0f, 1.0f, 1.0f));
+    this->staticMeshShader.setMat4("uWorldTransform", transform);
+
+    this->staticMeshShader.setFloat("uSpecPower", 128.0f);
+
+    this->setLightUniforms(this->staticMeshShader);
+    this->staticModel.draw(this->staticMeshShader);
+
+    transform = glm::translate(glm::mat4(1.0f), glm::vec3(2.0f, 0.0f, 0.0f));
+    transform = glm::scale(transform, glm::vec3(1.0f, 1.0f, 1.0f));
+    this->staticMeshShader.setMat4("uWorldTransform", transform);
+    this->staticModel.draw(this->staticMeshShader);
+
+    transform = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 2.0f));
+    transform = glm::scale(transform, glm::vec3(1.0f, 1.0f, 1.0f));
+    this->staticMeshShader.setMat4("uWorldTransform", transform);
+    this->staticModel.draw(this->staticMeshShader);
+
+    transform = glm::translate(glm::mat4(1.0f), glm::vec3(2.0f, 0.0f, 2.0f));
+    transform = glm::scale(transform, glm::vec3(1.0f, 1.0f, 1.0f));
+    this->staticMeshShader.setMat4("uWorldTransform", transform);
+    this->staticModel.draw(this->staticMeshShader);
 }
 
 auto se::Renderer::setLightUniforms(se::Shader& shader, const sem::Matrix4& viewMat)->void
@@ -319,7 +325,6 @@ auto se::Renderer::processInput(GLFWwindow* window)->void
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
 		camera.processKeyboard(se::CameraMovement::RIGHT, 0.1667f);
 }
-
 
 unsigned int loadCubemap(std::vector<std::string> faces)
 {

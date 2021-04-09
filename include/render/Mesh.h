@@ -3,7 +3,7 @@
 #include <string>
 #include "glad/glad.h"
 #include "glm/glm.hpp"
-#include "assimp/Importer.hpp""
+#include "assimp/Importer.hpp"
 #include "shader/Shader.h"
 
 namespace se
