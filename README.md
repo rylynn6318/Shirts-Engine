@@ -1,6 +1,8 @@
 # Shirts-Engine
 Shirts &amp; Jean
 
+ECS game engine with Modern C++
+
 ## How to build
 Conan(패키지 매니저) 설치 필요
 https://conan.io/downloads.html  
