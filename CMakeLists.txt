@@ -63,7 +63,7 @@ set(ENGINE_SOURCE_FILES
         "${ENGINE_SOURCE_DIR}/render/Mesh.cpp"
         "${ENGINE_SOURCE_DIR}/render/Model.cpp"
         "${ENGINE_SOURCE_DIR}/render/StaticModel.cpp"
-        )
+        include/component/StaticModelComponent.h)
 
 # debug
 if(!WIN32)

@@ -31,7 +31,11 @@ namespace se {
 
         Camera(float posX, float posY, float posZ, float upX, float upY, float upZ, float yaw, float pitch);
 
-        auto getViewMatrix() -> glm::mat4;
+        [[nodiscard]]
+        auto getViewMatrix() const -> glm::mat4;
+
+        [[nodiscard]]
+        auto getProjectionMatrix() const -> glm::mat4;
 
         auto processKeyboard(CameraMovement direction, float deltaTime) -> void;
 
@@ -40,7 +44,6 @@ namespace se {
         auto processMouseScroll(float yoffset) -> void;
 
     public:
-
         glm::vec3 Position;
         glm::vec3 Front;
         glm::vec3 Up;

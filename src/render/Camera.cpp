@@ -1,24 +1,18 @@
 #include "render/Camera.h"
 
 se::Camera::Camera(glm::vec3 position, glm::vec3 up, float yaw, float pitch) :
-        Front(glm::vec3(0.0f, 0.0f, -1.0f)), movementSpeed(SPEED), mouseSensitivity(SENSITIVITY), fov(FOV) {
-    Position = position;
-    WorldUp = up;
-    Yaw = yaw;
-    Pitch = pitch;
+        Front(glm::vec3(0.0f, 0.0f, -1.0f)), movementSpeed(SPEED), mouseSensitivity(SENSITIVITY), fov(FOV),
+        Position(position), WorldUp(up), Yaw(yaw), Pitch(pitch), Right(glm::normalize(glm::cross(Front, WorldUp))),
+        Up(glm::normalize(glm::cross(Right, Front))) {
     updateCameraVectors();
 }
 
 
-se::Camera::Camera(float posX, float posY, float posZ, float upX, float upY, float upZ, float yaw, float pitch) {
-    Position = glm::vec3(posX, posY, posZ);
-    WorldUp = glm::vec3(upX, upY, upZ);
-    Yaw = yaw;
-    Pitch = pitch;
-    updateCameraVectors();
+se::Camera::Camera(float posX, float posY, float posZ, float upX, float upY, float upZ, float yaw, float pitch)
+        : Camera(glm::vec3(posX, posY, posZ), glm::vec3(upX, upY, upZ), yaw, pitch) {
 }
 
-auto se::Camera::getViewMatrix() -> glm::mat4 {
+auto se::Camera::getViewMatrix() const -> glm::mat4 {
     return glm::lookAt(Position, Position + Front, Up);
 }
 
@@ -67,4 +61,8 @@ auto se::Camera::updateCameraVectors() -> void {
     Front = glm::normalize(front);
     Right = glm::normalize(glm::cross(Front, WorldUp));
     Up = glm::normalize(glm::cross(Right, Front));
+}
+
+auto se::Camera::getProjectionMatrix() const -> glm::mat4 {
+    return projection;
 }

@@ -1,3 +1,4 @@
+#include <iostream>
 #include "render/Mesh.h"
 #include "glm/gtc/matrix_transform.hpp"
 
