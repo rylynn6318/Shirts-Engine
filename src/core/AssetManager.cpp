@@ -1,6 +1,6 @@
 #include "core/AssetManager.h"
 
-const se::StaticModel& se::AssetManager::getStaticModel(const char* path)
+const se::StaticModel& se::AssetManager::getStaticModel(const std::string& path)
 {
 	if (staticModelMap.find(path) != staticModelMap.end())
 		return staticModelMap.at(path);

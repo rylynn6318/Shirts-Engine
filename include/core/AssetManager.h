@@ -2,6 +2,7 @@
 #include "render/StaticModel.h"
 #include <unordered_map>
 #include <memory>
+#include <string>
 
 namespace se
 {
@@ -10,9 +11,9 @@ namespace se
 	public:
 		AssetManager() = default;
 		~AssetManager() = default;
-		const StaticModel& getStaticModel(const char* path);
+		const StaticModel& getStaticModel(const std::string& path);
 
 	private:
-		std::unordered_map<const char*, StaticModel> staticModelMap;
+		std::unordered_map<std::string, StaticModel> staticModelMap;
 	};
 }
