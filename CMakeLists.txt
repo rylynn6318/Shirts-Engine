@@ -39,6 +39,8 @@ set(ENGINE_INCLUDE_FILES
         "${ENGINE_INCLUDE_DIR}/component/Component.h"
         "${ENGINE_INCLUDE_DIR}/entity/Entity.h"
         "${ENGINE_INCLUDE_DIR}/entity/EntityDB.h"
+        "${ENGINE_INCLUDE_DIR}/utility/Dynamic_bitset.h"
+
 #        "${ENGINE_INCLUDE_DIR}/shader/Shader.h"
         )
 
@@ -48,7 +50,7 @@ set(ENGINE_SOURCE_FILES
         "${ENGINE_SOURCE_DIR}/component/Component.cpp"
         "${ENGINE_SOURCE_DIR}/entity/Entity.cpp"
         "${ENGINE_SOURCE_DIR}/entity/EntityDB.cpp"
-
+        "${ENGINE_SOURCE_DIR}/utility/Dynamic_bitset.cpp"
 #        "${ENGINE_SOURCE_DIR}/shader/Shader.cpp"
 #        "${ENGINE_SOURCE_DIR}/core/Game.cpp"
 #        "${ENGINE_SOURCE_DIR}/render/VertexArray.cpp"
