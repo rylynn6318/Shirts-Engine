@@ -5,7 +5,7 @@
 
 namespace se
 {
-	class Dynamic_bitset
+	class dynamic_bitset
 	{
 	public:
 		static constexpr std::size_t bit_size = 8;
@@ -13,11 +13,11 @@ namespace se
 
 		using bitset = std::bitset<bit_size>;
 		 
-		Dynamic_bitset();
-		~Dynamic_bitset() = default;
-		Dynamic_bitset(const Dynamic_bitset&) = default;
-		Dynamic_bitset& operator=(const Dynamic_bitset&) = default;
-		bool operator==(const Dynamic_bitset&) const;
+		dynamic_bitset();
+		~dynamic_bitset() = default;
+		dynamic_bitset(const dynamic_bitset&) = default;
+		dynamic_bitset& operator=(const dynamic_bitset&) = default;
+		bool operator==(const dynamic_bitset&) const;
 
 		void set(std::size_t pos);
 		void reset(std::size_t pos);
@@ -28,7 +28,7 @@ namespace se
 		bool empty() const noexcept;
 		std::string to_string() const noexcept;
 
-		bool is_proper_subset_of(const Dynamic_bitset& bitset) const;
+		bool is_proper_subset_of(const dynamic_bitset& bitset) const;
 		std::size_t find_first() const noexcept;
 		std::size_t find_next(std::size_t pos) const noexcept;
 

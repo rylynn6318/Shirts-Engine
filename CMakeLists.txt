@@ -12,12 +12,18 @@ set(CMAKE_CXX_STANDARD 20)
 
 # MSVC 환경에서 LNK 에러 발생해서 추가됨
 if (WIN32)
+    add_compile_options("$<$<NOT:$<CONFIG:Debug>>:/Zi>")
+    add_link_options("$<$<NOT:$<CONFIG:Debug>>:/DEBUG>")
+    add_link_options("$<$<NOT:$<CONFIG:Debug>>:/OPT:REF>")
+    add_link_options("$<$<NOT:$<CONFIG:Debug>>:/OPT:ICF>")
+    add_link_options("$<$<CONFIG:RELWITHDEBINFO>:/PROFILE>")
+
     SET(CMAKE_SHARED_LINKER_FLAGS ${CMAKE_SHARED_LINKER_FLAGS} "/NODEFAULTLIBS:MSVCRT")
     if(CMAKE_BUILD_TYPE EQUAL Release)
         string(REPLACE "-O2" "-O0" CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE}")
         string(REPLACE "-O2" "-O0" CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE}")
     endif()
-
+    
     if (CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 19.12.25835)
         set(CMAKE_CXX20_STANDARD_COMPILE_OPTION "-std:c++latest")
         set(CMAKE_CXX20_EXTENSION_COMPILE_OPTION "-std:c++latest")
