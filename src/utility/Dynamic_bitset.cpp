@@ -47,6 +47,7 @@ void se::dynamic_bitset::resize(std::size_t size)
 	{
 		std::size_t block_size = size / bit_size + 1 - bitArray.size();
 		numbits = bit_size * (block_size + 1);
+		bitArray.reserve(bitArray.size() + block_size);
 		for (int i = 0; i < block_size; i++)
 		{
 			bitArray.push_back(bitset());
