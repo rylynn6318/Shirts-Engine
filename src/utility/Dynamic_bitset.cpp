@@ -17,23 +17,7 @@ std::size_t se::dynamic_bitset::size() const noexcept
 
 bool se::dynamic_bitset::operator==(const dynamic_bitset& other) const
 {
-	auto& big = (bitArray.size() <= other.bitArray.size()) ? other.bitArray : bitArray;
-	auto& small = (bitArray.size() > other.bitArray.size()) ? other.bitArray : bitArray;
-
-	for (int i = small.size(); i < big.size(); i++)
-	{
-		if (big[i].any())
-			return false;
-	}
-
-	if (std::equal(small.cbegin(), small.cend(), big.cbegin()))
-	{
-		return true;
-	}
-	else
-	{
-		return false;
-	}
+	return is_same(other);
 }
 
 void se::dynamic_bitset::clear()
@@ -101,10 +85,9 @@ std::string se::dynamic_bitset::to_string() const noexcept
 
 bool se::dynamic_bitset::is_proper_subset_of(const dynamic_bitset& other) const
 {
-	if (this->bitArray == other.bitArray)
-	{
+	if (is_same(other))
 		return false;
-	}
+
 	return is_subset_of(other);
 }
 
@@ -164,4 +147,25 @@ std::size_t se::dynamic_bitset::find_from(std::size_t pos) const noexcept
 	}
 
 	return npos;
+}
+
+bool se::dynamic_bitset::is_same(const dynamic_bitset& other) const
+{
+	auto& big = (bitArray.size() <= other.bitArray.size()) ? other.bitArray : bitArray;
+	auto& small = (bitArray.size() > other.bitArray.size()) ? other.bitArray : bitArray;
+
+	for (int i = small.size(); i < big.size(); i++)
+	{
+		if (big[i].any())
+			return false;
+	}
+
+	if (std::equal(small.cbegin(), small.cend(), big.cbegin()))
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
 }
