@@ -29,6 +29,7 @@ namespace se
 		std::string to_string() const noexcept;
 
 		bool is_proper_subset_of(const dynamic_bitset& bitset) const;
+		bool is_subset_of(const dynamic_bitset& bitset) const;
 		std::size_t find_first() const noexcept;
 		std::size_t find_next(std::size_t pos) const noexcept;
 

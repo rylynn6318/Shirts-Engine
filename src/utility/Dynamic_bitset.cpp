@@ -101,6 +101,15 @@ std::string se::dynamic_bitset::to_string() const noexcept
 
 bool se::dynamic_bitset::is_proper_subset_of(const dynamic_bitset& other) const
 {
+	if (this->bitArray == other.bitArray)
+	{
+		return false;
+	}
+	return is_subset_of(other);
+}
+
+bool se::dynamic_bitset::is_subset_of(const dynamic_bitset& other) const
+{
 	if (bitArray.size() > other.bitArray.size())
 	{
 		for (int i = other.bitArray.size(); i < bitArray.size(); i++)
