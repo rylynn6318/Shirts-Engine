@@ -151,8 +151,8 @@ std::size_t se::dynamic_bitset::find_from(std::size_t pos) const noexcept
 
 bool se::dynamic_bitset::is_same(const dynamic_bitset& other) const
 {
-	auto& big = (bitArray.size() <= other.bitArray.size()) ? other.bitArray : bitArray;
-	auto& small = (bitArray.size() > other.bitArray.size()) ? other.bitArray : bitArray;
+	const auto& big = (bitArray.size() <= other.bitArray.size()) ? other.bitArray : bitArray;
+	const auto& small = (bitArray.size() > other.bitArray.size()) ? other.bitArray : bitArray;
 
 	for (int i = small.size(); i < big.size(); i++)
 	{
