@@ -8,7 +8,7 @@ namespace se
 	class dynamic_bitset
 	{
 	public:
-		static constexpr std::size_t bit_size = 8;
+		static constexpr std::size_t bit_size = 64;
 		static constexpr std::size_t npos = SIZE_MAX;
 
 		using bitset = std::bitset<bit_size>;
@@ -36,5 +36,6 @@ namespace se
 		std::size_t numbits;
 		std::vector<bitset> bitArray;
 		std::size_t find_from(std::size_t pos) const noexcept;
+		std::size_t firstPos;
 	};
 }
