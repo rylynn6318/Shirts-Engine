@@ -5,8 +5,7 @@
 
 se::dynamic_bitset::dynamic_bitset() :
 	numbits(bit_size),
-	bitArray{ bitset() },
-	firstPos(0)
+	bitArray{ bitset() }
 {
 
 }
@@ -43,7 +42,6 @@ void se::dynamic_bitset::clear()
 	{
 		bitset.reset();
 	}
-	firstPos = 0;
 }
 
 void se::dynamic_bitset::resize(std::size_t size)
@@ -66,10 +64,6 @@ void se::dynamic_bitset::set(std::size_t pos)
 	{
 		resize(pos);
 	}
-	if (pos < firstPos)
-	{
-		firstPos = pos;
-	}
 
 	auto& bits = bitArray[pos / bit_size];
 	bits[pos % bit_size] = true;
@@ -79,9 +73,6 @@ void se::dynamic_bitset::reset(std::size_t pos)
 {
 	if (numbits > pos)
 	{
-		if (firstPos == pos)
-			firstPos = find_next(pos);
-
 		auto& bits = bitArray[pos / bit_size];
 		bits[pos % bit_size] = false;
 	}
@@ -136,7 +127,7 @@ bool se::dynamic_bitset::is_proper_subset_of(const dynamic_bitset& other) const
 
 std::size_t se::dynamic_bitset::find_first() const noexcept
 {
-	return find_from(firstPos);
+	return find_from(0);
 }
 
 std::size_t se::dynamic_bitset::find_next(std::size_t pos) const noexcept

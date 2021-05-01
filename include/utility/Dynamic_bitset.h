@@ -36,6 +36,5 @@ namespace se
 		std::size_t numbits;
 		std::vector<bitset> bitArray;
 		std::size_t find_from(std::size_t pos) const noexcept;
-		std::size_t firstPos;
 	};
 }
