@@ -66,18 +66,18 @@ namespace se {
 
         template<typename Callable>
         auto addSystem(Callable callable) {
-            systems.push_back(std::make_unique<System<Callable>>(callable, this));
+            systems.push_back(std::make_unique<System<Callable>>(this, callable));
         }
 
         template<typename Callable, typename InitCallable>
-        auto addSystem(Callable callable, InitCallable init_callable) {
-            systems.push_back(std::make_unique<System<Callable, InitCallable>>(callable, init_callable, this));
+        auto addSystem(InitCallable init_callable, Callable callable) {
+            systems.push_back(std::make_unique<System<Callable, InitCallable>>(this, callable, init_callable));
         }
 
         // TODO : 시스템 한번만 즉시 실행, 혹은 특정 시점(init() 등)에 실행할 수 있는 함수 하나 필요함
         template<typename Callable>
         auto visit(Callable callable) {
-            auto system = System(callable, this);
+            auto system = System(this, callable);
             std::for_each(std::execution::par_unseq, entities.begin(), entities.end(), [&system](Entity &e) {
                 system->update(e);
             });
@@ -278,8 +278,8 @@ namespace se {
         template<typename Callable, typename InitCallable = decltype(EMPTY_FUNC)>
         class System : public SystemBase {
         public:
-            System(Callable callable, EntityDB *db) : callback(callable), init_callback(EMPTY_FUNC), db(db) {};
-            System(Callable callable, InitCallable init_callable, EntityDB *db) : callback(callable), init_callback(init_callable), db(db) {};
+            System(EntityDB *db, Callable callable, InitCallable init_callable) : callback(callable), init_callback(init_callable), db(db) {};
+            System(EntityDB *db, Callable callable) : System(db, callable, EMPTY_FUNC) {};
 
             auto update(Entity &e) -> void override {
                 if (e.mask.size() > traits.mask.size())
