@@ -67,6 +67,8 @@ set(ENGINE_SOURCE_FILES
         "${ENGINE_SOURCE_DIR}/render/Mesh.cpp"
         "${ENGINE_SOURCE_DIR}/render/Model.cpp"
         "${ENGINE_SOURCE_DIR}/render/StaticModel.cpp"
+        "${ENGINE_SOURCE_DIR}/core/input/Input.cpp"
+        "${ENGINE_SOURCE_DIR}/core/input/Key.cpp"
         include/component/StaticModelComponent.h)
 
 # debug
