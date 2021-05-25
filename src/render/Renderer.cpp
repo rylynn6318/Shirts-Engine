@@ -13,7 +13,7 @@ unsigned int loadCubemap(std::vector<std::string> faces);
 namespace se {
     const unsigned int SCR_WIDTH = 1200;
     const unsigned int SCR_HEIGHT = 88;
-    Camera camera{glm::vec3(0.0f, 0.0f, 10.0f)};
+    CameraComponent camera{glm::vec3(0.0f, 0.0f, 10.0f)};
     float lastX = SCR_WIDTH / 2.0f;
     float lastY = SCR_HEIGHT / 2.0f;
     bool firstMouse = true;

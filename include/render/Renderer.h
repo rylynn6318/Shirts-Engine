@@ -5,7 +5,7 @@
 #include "math/Math.h"
 #include "render/StaticModel.h"
 #include "render/Mesh.h"
-#include "render/Camera.h"
+#include "render/CameraComponent.h"
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 #include "glm/gtc/type_ptr.hpp"
@@ -48,7 +48,7 @@ namespace se
 		sem::Matrix4 projection;
 		sem::Vector3 ambientLight;
 
-		//Camera camera{ glm::vec3(5.0f,5.0f,5.0f) };
+		//CameraComponent camera{ glm::vec3(5.0f,5.0f,5.0f) };
         void drawStaticMesh();
 
         void drawSkybox();

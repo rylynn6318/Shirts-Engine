@@ -3,7 +3,7 @@
 #include <GLFW/glfw3.h>
 #include "shader/Shader.h"
 #include "render/VertexArray.h"
-#include "render/Camera.h"
+#include "render/CameraComponent.h"
 #include "render/Model.h"
 
 

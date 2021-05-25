@@ -20,16 +20,16 @@ namespace se {
     const float SENSITIVITY = 0.1f;
     const float FOV = 45.0f;
 
-    class Camera : public Component<Camera> {
+    class CameraComponent : public Component<CameraComponent> {
     public:
-        Camera() = delete;
+        CameraComponent() = delete;
 
-        ~Camera() = default;
+        ~CameraComponent() = default;
 
-        explicit Camera(glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f),
-                        float yaw = YAW, float pitch = PITCH);
+        explicit CameraComponent(glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f),
+                                 float yaw = YAW, float pitch = PITCH);
 
-        Camera(float posX, float posY, float posZ, float upX, float upY, float upZ, float yaw, float pitch);
+        CameraComponent(float posX, float posY, float posZ, float upX, float upY, float upZ, float yaw, float pitch);
 
         [[nodiscard]]
         auto getViewMatrix() const -> glm::mat4;
@@ -58,7 +58,7 @@ namespace se {
         float fov;
 
     private:
-        static Camera *active_camera;
+        static CameraComponent *active_camera;
 
         glm::mat4 projection = glm::perspective(glm::radians(FOV), (float) 1200 / (float) 800, 0.1f, 1000.0f);
         // TransformComponent& postion;

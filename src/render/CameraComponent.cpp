@@ -1,6 +1,6 @@
-#include "render/Camera.h"
+#include "render/CameraComponent.h"
 
-se::Camera::Camera(glm::vec3 position, glm::vec3 up, float yaw, float pitch) :
+se::CameraComponent::CameraComponent(glm::vec3 position, glm::vec3 up, float yaw, float pitch) :
         Front(glm::vec3(0.0f, 0.0f, -1.0f)), movementSpeed(SPEED), mouseSensitivity(SENSITIVITY), fov(FOV),
         Position(position), WorldUp(up), Yaw(yaw), Pitch(pitch), Right(glm::normalize(glm::cross(Front, WorldUp))),
         Up(glm::normalize(glm::cross(Right, Front))) {
@@ -8,15 +8,15 @@ se::Camera::Camera(glm::vec3 position, glm::vec3 up, float yaw, float pitch) :
 }
 
 
-se::Camera::Camera(float posX, float posY, float posZ, float upX, float upY, float upZ, float yaw, float pitch)
-        : Camera(glm::vec3(posX, posY, posZ), glm::vec3(upX, upY, upZ), yaw, pitch) {
+se::CameraComponent::CameraComponent(float posX, float posY, float posZ, float upX, float upY, float upZ, float yaw, float pitch)
+        : CameraComponent(glm::vec3(posX, posY, posZ), glm::vec3(upX, upY, upZ), yaw, pitch) {
 }
 
-auto se::Camera::getViewMatrix() const -> glm::mat4 {
+auto se::CameraComponent::getViewMatrix() const -> glm::mat4 {
     return glm::lookAt(Position, Position + Front, Up);
 }
 
-auto se::Camera::processKeyboard(CameraMovement direction, float deltaTime) -> void {
+auto se::CameraComponent::processKeyboard(CameraMovement direction, float deltaTime) -> void {
     float velocity = movementSpeed * deltaTime;
     if (direction == CameraMovement::FORWARD)
         Position += Front * velocity;
@@ -28,7 +28,7 @@ auto se::Camera::processKeyboard(CameraMovement direction, float deltaTime) -> v
         Position += Right * velocity;
 }
 
-auto se::Camera::processMouseMovement(float xoffset, float yoffset, GLboolean constrainPitch) -> void {
+auto se::CameraComponent::processMouseMovement(float xoffset, float yoffset, GLboolean constrainPitch) -> void {
     xoffset *= mouseSensitivity;
     yoffset *= mouseSensitivity;
 
@@ -45,7 +45,7 @@ auto se::Camera::processMouseMovement(float xoffset, float yoffset, GLboolean co
     updateCameraVectors();
 }
 
-auto se::Camera::processMouseScroll(float yoffset) -> void {
+auto se::CameraComponent::processMouseScroll(float yoffset) -> void {
     fov -= (float) yoffset;
     if (fov < 1.0f)
         fov = 1.0f;
@@ -53,7 +53,7 @@ auto se::Camera::processMouseScroll(float yoffset) -> void {
         fov = 45.0f;
 }
 
-auto se::Camera::updateCameraVectors() -> void {
+auto se::CameraComponent::updateCameraVectors() -> void {
     glm::vec3 front;
     front.x = cos(glm::radians(Yaw)) * cos(glm::radians(Pitch));
     front.y = sin(glm::radians(Pitch));
@@ -63,6 +63,6 @@ auto se::Camera::updateCameraVectors() -> void {
     Up = glm::normalize(glm::cross(Right, Front));
 }
 
-auto se::Camera::getProjectionMatrix() const -> glm::mat4 {
+auto se::CameraComponent::getProjectionMatrix() const -> glm::mat4 {
     return projection;
 }
