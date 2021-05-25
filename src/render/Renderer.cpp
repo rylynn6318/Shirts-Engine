@@ -173,18 +173,14 @@ auto se::Renderer::draw() -> void {
 
     //MVP 구하기
 
-    glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float) 1200 / (float) 800, 0.1f, 1000.0f);
-    //glm::mat4 view = glm::lookAt(camera.Position, glm::vec3(2, 2, 2), glm::vec3(0, 1, 0));
-    glm::mat4 view = camera.getViewMatrix();
     glm::mat4 model = glm::mat4(1.0f);
     model = glm::translate(model, glm::vec3(5.0f, 10.0f, 0.0f));
-
-
+    
     //텍스쳐
     textureShader.activeShader();
     textureShader.setInt("texture1", 0);
-    textureShader.setMat4("uView", view);
-    textureShader.setMat4("uProj", projection);
+    textureShader.setMat4("uView", camera.getViewMatrix());
+    textureShader.setMat4("uProj", camera.getProjectionMatrix());
     textureShader.setMat4("uModel", glm::rotate(model, glm::radians(90.0f), glm::vec3(-1.0f, 0.0f, 0.0f)));
     glBindVertexArray(testVAO);
     glBindTexture(GL_TEXTURE_2D, testTexture);
@@ -200,17 +196,17 @@ auto se::Renderer::draw() -> void {
     drawStaticMesh();
 
     //스카이 박스
-    drawSkybox(projection, view);
+    drawSkybox();
 
     glfwSwapBuffers(window);
     glfwPollEvents();
 }
 
-void se::Renderer::drawSkybox(const glm::mat4 &projection, const glm::mat4 &view) {
+void se::Renderer::drawSkybox() {
     glDepthFunc(GL_LEQUAL);
     this->skyboxShader.activeShader();
-    this->skyboxShader.setMat4("uView", view);
-    this->skyboxShader.setMat4("uProj", projection);
+    this->skyboxShader.setMat4("uView", camera.getViewMatrix());
+    this->skyboxShader.setMat4("uProj", camera.getProjectionMatrix());
 
     glBindVertexArray(this->skyboxVAO);
     glActiveTexture(GL_TEXTURE0);
