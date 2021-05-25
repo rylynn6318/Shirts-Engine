@@ -1,27 +1,15 @@
+#pragma once
+
 #include "Component.h"
+#include "glm/glm.hpp"
 
-namespace se
-{
-	struct Position
-	{
-		Position() :x(0), y(0), z(0) {}
-		float x, y, z;
-	};
-	struct Rotation
-	{
-		Rotation() :yaw(0), pitch(0), roll(0) {}
-		float yaw, pitch, roll;
-	};
-	struct Scale
-	{
-		Scale() :x(1), y(1), z(1) {}
-		float x, y, z;
-	};
+namespace se {
+    struct TransformComponent : Component<TransformComponent> {
+        glm::vec3 position;
+        glm::mat4 rotation;
+        glm::vec3 scale;
 
-	struct TransformComponent : Component<TransformComponent>
-	{
-		Position position;
-		Rotation rotation;
-		Scale scale;
-	};
+        TransformComponent(glm::vec3 position, glm::mat4 rotation, float scale)
+                : position(position), rotation(rotation), scale(scale) {}
+    };
 }

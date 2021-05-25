@@ -65,7 +65,7 @@ namespace se
 		auto boneTransform(double time, std::vector<aiMatrix4x4>& transforms)->void;
 		auto readNodeHierarchy(float p_animation_time, const aiNode* p_node, const aiMatrix4x4 parent_transform)->void;
 
-		glm::quat rotate_head_xz = glm::quat(cos(glm::radians(0.0f)), sin(glm::radians(0.0f)) * glm::vec3(1.0f, 0.0f, 0.0f));
+		glm::quat rotate_head_xz = glm::quat(cosf(glm::radians(0.0f)), sinf(glm::radians(0.0f)) * glm::vec3(1.0f, 0.0f, 0.0f));
 	};
 
 }

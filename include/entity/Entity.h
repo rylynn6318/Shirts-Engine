@@ -7,7 +7,7 @@ namespace se {
     struct Entity final {
         struct ID final {
             friend class EntityDB;
-            friend class Entity;
+            friend struct Entity;
             friend struct std::hash<ID>;
 
             auto operator==(ID &) -> bool;

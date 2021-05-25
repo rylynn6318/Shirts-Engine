@@ -3,7 +3,7 @@
 #include <string>
 #include "glad/glad.h"
 #include "glm/glm.hpp"
-#include "assimp/Importer.hpp""
+#include "assimp/Importer.hpp"
 #include "shader/Shader.h"
 
 namespace se
@@ -21,7 +21,7 @@ namespace se
 
 	struct Texture 
 	{
-		unsigned int textureID;
+		unsigned int ID;
 		std::string type;
 		std::string path;
 	};
@@ -67,7 +67,7 @@ namespace se
 
 	private:
 		GLuint VAO;
-		GLuint verticesVBO;
+		GLuint VBO;
 		GLuint EBO;
 		GLuint bonesVBO;
 

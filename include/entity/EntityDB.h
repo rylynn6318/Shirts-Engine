@@ -66,14 +66,18 @@ namespace se {
 
         template<typename Callable>
         auto addSystem(Callable callable) {
-            systems.push_back(std::make_unique<System < Callable>>
-            (callable, this));
+            systems.push_back(std::make_unique<System<Callable>>(this, callable));
+        }
+
+        template<typename Callable, typename InitCallable>
+        auto addSystem(InitCallable init_callable, Callable callable) {
+            systems.push_back(std::make_unique<System<Callable, InitCallable>>(this, callable, init_callable));
         }
 
         // TODO : 시스템 한번만 즉시 실행, 혹은 특정 시점(init() 등)에 실행할 수 있는 함수 하나 필요함
         template<typename Callable>
         auto visit(Callable callable) {
-            auto system = System(callable, this);
+            auto system = System(this, callable);
             std::for_each(std::execution::par_unseq, entities.begin(), entities.end(), [&system](Entity &e) {
                 system->update(e);
             });
@@ -237,8 +241,7 @@ namespace se {
         };
 
         template<typename Callable>
-        struct system_traits : public system_traits<decltype(&std::decay_t<Callable>::operator())> {
-        };
+        struct system_traits : public system_traits<decltype(&std::decay_t<Callable>::operator())> {};
 
         template<typename R, component ... Components>
         struct system_traits<R (*)(Components...)>
@@ -264,6 +267,8 @@ namespace se {
         struct system_traits<R (Callable::*)(Components...) const &>
                 : public system_traits_args<std::decay_t<Components>...> {};
 
+        static auto EMPTY_FUNC() -> void {};
+
         // -------- System --------
         struct SystemBase {
             virtual ~SystemBase() = default;
@@ -271,10 +276,11 @@ namespace se {
             virtual auto update(Entity &) -> void = 0;
         };
 
-        template<typename Callable>
+        template<typename Callable, typename InitCallable = decltype(EMPTY_FUNC)>
         class System : public SystemBase {
         public:
-            System(Callable callable, EntityDB *db) : callback(callable), db(db) {};
+            System(EntityDB *db, Callable callable, InitCallable init_callable) : callback(callable), init_callback(init_callable), db(db) {};
+            System(EntityDB *db, Callable callable) : System(db, callable, EMPTY_FUNC) {};
 
             auto update(Entity &e) -> void override {
                 if (e.mask.size() > traits.mask.size())
@@ -282,13 +288,16 @@ namespace se {
                 else if (e.mask.size() < traits.mask.size())
                     e.mask.resize(traits.mask.size());
 
-                if (traits.mask.is_proper_subset_of(e.mask) || traits.mask == e.mask)
+                if (traits.mask.is_proper_subset_of(e.mask) || traits.mask == e.mask) {
+                    init_callback();
                     traits.apply(db, callback, e);
+                }
             }
 
         private:
             EntityDB *db;
             Callable callback;
+            InitCallable init_callback;
             EntityDB::system_traits<Callable> traits{};
         };
 
