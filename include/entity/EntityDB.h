@@ -84,10 +84,10 @@ namespace se {
     private:
         // ---- Utils ----
         template<component ... Cs>
-        static auto addMask(boost::dynamic_bitset<> &mask) -> typename std::enable_if<(sizeof...(Cs) == 0)>::type {}
+        static auto addMask(dynamic_bitset& mask) -> typename std::enable_if<(sizeof...(Cs) == 0)>::type {}
 
         template<component C, component ... Cs>
-        static auto addMask(boost::dynamic_bitset<> &mask) -> void {
+        static auto addMask(dynamic_bitset& mask) -> void {
             auto i = getGroupId<C>();
             if (mask.size() <= i)
                 mask.resize(i + 1);
@@ -96,7 +96,7 @@ namespace se {
         }
 
         template<component C>
-        static auto removeMask(boost::dynamic_bitset<> &mask) -> void {
+        static auto removeMask(dynamic_bitset& mask) -> void {
             auto i = getGroupId<C>();
             if (mask.size() <= i)
                 mask.resize(i + 1);
@@ -215,7 +215,8 @@ namespace se {
                 addMask<ArgsOfCallable...>(mask);
             }
 
-            boost::dynamic_bitset<> mask;
+            //boost::dynamic_bitset<> mask;
+            dynamic_bitset mask;
 
             // TODO : 아래 내용 생각해볼것
             // 여기는 mask 정보만 들고 있고 실제 함수 실행은 타입의 mask(guid)로 unsafeGetComponent 하는 함수를 만들어서
