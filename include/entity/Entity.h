@@ -1,6 +1,7 @@
 #pragma once
 
 #include <boost/dynamic_bitset.hpp>
+#include "utility/Dynamic_bitset.h"
 
 namespace se {
     struct Entity final {
@@ -28,10 +29,13 @@ namespace se {
 
         auto operator==(Entity &) -> bool;
         auto operator==(ID &) -> bool;
+        Entity(const Entity&) = default;
+        Entity& operator=(const Entity&) = default;
 
     private:
         ID id;
-        boost::dynamic_bitset<> mask{};
+        //boost::dynamic_bitset<> mask{};
+        dynamic_bitset mask{};
 
         explicit Entity(ID id) : id(id) {};
     };

@@ -1,4 +1,3 @@
-#include <iostream>
 #include "component/Component.h"
 #include "entity/EntityDB.h"
 #include "render/Renderer.h"
@@ -66,6 +65,7 @@ int main()
     {
         renderer.draw();
     }
+
 
 	return 0;
 }
