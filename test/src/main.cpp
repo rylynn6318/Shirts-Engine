@@ -3,28 +3,28 @@
 #include "entity/EntityDB.h"
 #include "render/Renderer.h"
 
-//struct PositionComponent : public se::Component<PositionComponent> {
-//    float x = 0.0f;
-//    float y = 0.0f;
-//};
-//
-//struct DirectionComponent : public se::Component<DirectionComponent>{
-//    float x = 0.0f;
-//    float y = 0.0f;
-//};
-//
-//struct ComflabulationComponent : public se::Component<ComflabulationComponent>{
-//    float thingy = 0.0;
-//    int dingy = 0;
-//    bool mingy = false;
-//    std::string stringy;
-//};
-//
+struct PositionComponent : public se::Component<PositionComponent> {
+    float x = 0.0f;
+    float y = 0.0f;
+};
+
+struct DirectionComponent : public se::Component<DirectionComponent>{
+    float x = 0.0f;
+    float y = 0.0f;
+};
+
+struct ComflabulationComponent : public se::Component<ComflabulationComponent>{
+    float thingy = 0.0;
+    int dingy = 0;
+    bool mingy = false;
+    std::string stringy;
+};
+
 int main()
 {
 //	std::cout << "test start" << std::endl;
 //    auto setup_start = std::chrono::high_resolution_clock::now();
-//    int nentities = 10'000'000;
+//    int nentities = 20'000'000;
 //	se::EntityDB db;
 //
 //    for (size_t i = 0; i < nentities; i++) {
@@ -59,6 +59,7 @@ int main()
 //    std::cout << "test end" << std::endl;
 //    std::cout << "setup time (s) : " << setup_time.count() << std::endl;
 //    std::cout << "update time (s) : " << sys_time.count() << std::endl;
+
     se::Renderer renderer;
     renderer.init(1200,800);
     while (true)

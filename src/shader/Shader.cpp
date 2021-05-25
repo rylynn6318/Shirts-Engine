@@ -3,7 +3,7 @@
 #include <sstream>
 #include <iostream>
 
-se::Shader::Shader(): shaderProgram(0), fragmentShader(0), vertextShader(0)
+se::Shader::Shader(): shaderProgram(0), fragmentShader(0), vertexShader(0)
 {
 
 }

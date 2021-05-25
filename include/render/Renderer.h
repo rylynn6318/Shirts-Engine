@@ -49,5 +49,8 @@ namespace se
 		sem::Vector3 ambientLight;
 
 		//Camera camera{ glm::vec3(5.0f,5.0f,5.0f) };
-	};
+        void drawStaticMesh();
+
+        void drawSkybox(const glm::mat4 &projection, const glm::mat4 &view);
+    };
 }
