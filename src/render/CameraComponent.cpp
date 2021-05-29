@@ -16,8 +16,8 @@ auto se::CameraComponent::getViewMatrix() const -> glm::mat4 {
     return glm::lookAt(Position, Position + Front, Up);
 }
 
-auto se::CameraComponent::processKeyboard(CameraMovement direction, float deltaTime) -> void {
-    float velocity = movementSpeed * deltaTime;
+auto se::CameraComponent::processKeyboard(CameraMovement direction, std::chrono::duration<int64_t, std::ratio<1, 1000>> deltaTime) -> void {
+    float velocity = movementSpeed * deltaTime.count();
     if (direction == CameraMovement::FORWARD)
         Position += Front * velocity;
     if (direction == CameraMovement::BACKWARD)
@@ -65,4 +65,20 @@ auto se::CameraComponent::updateCameraVectors() -> void {
 
 auto se::CameraComponent::getProjectionMatrix() const -> glm::mat4 {
     return projection;
+}
+
+auto se::CameraComponent::activeThisCamera() -> void {
+    last_camera = active_camera;
+    active_camera = this;
+}
+
+auto se::CameraComponent::activeCamera() -> se::CameraComponent & {
+    if (active_camera == nullptr)
+        active_camera = this;
+    return *active_camera;
+}
+
+se::CameraComponent::~CameraComponent() {
+    if (active_camera == this)
+        active_camera = last_camera;
 }

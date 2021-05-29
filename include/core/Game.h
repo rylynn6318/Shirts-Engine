@@ -1,37 +1,47 @@
 #pragma once
-#include <glad/glad.h>
-#include <GLFW/glfw3.h>
-#include "shader/Shader.h"
-#include "render/VertexArray.h"
-#include "render/CameraComponent.h"
-#include "render/Model.h"
 
+#include <chrono>
+#include "entity/EntityDB.h"
 
-namespace se
-{
-	//TODO : 다 분리해야함 
-	class Game
-	{
-	public:
-		Game();
-		~Game();
+using namespace std::chrono_literals;
 
-		auto init()->bool;
-		auto run()->void;
-		auto terminate()->void;
+namespace se {
+    //TODO : 다 분리해야함
+    class Game {
+    public:
+        static Game &Instance() {
+            static Game instance;
+            return instance;
+        }
 
-	public:
+        Game(const Game &) = delete;
 
+        Game(Game &&) = delete;
 
-	private:
-		GLFWwindow* window;
-		Shader shader;
-		VertexArray* vao;
-		Model model;
-		glm::mat4 modelMat;
+        Game &operator=(const Game &) = delete;
 
-		void processInput(GLFWwindow* window);
-		void load(); //test for load shader, vertex
-		bool isRunning = true;
-	};
+        Game &operator=(Game &&) = delete;
+
+        auto init() -> bool;
+
+        auto run(EntityDB &db) -> void;
+
+        auto terminate() -> void;
+
+        [[nodiscard]]
+        static auto deltaTime() {
+            return delta_time;
+        }
+
+        constexpr static auto MS_PER_UPDATE = 16ms;
+
+    private:
+        Game() = default;
+
+        ~Game() = default;
+
+        static std::chrono::milliseconds delta_time;
+
+        bool isRunning = true;
+    };
 }

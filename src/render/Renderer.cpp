@@ -3,7 +3,6 @@
 #include <vector>
 #include <chrono>
 #include <entity/EntityDB.h>
-#include <component/StaticModelComponent.h>
 #include "stb_image.h"
 
 unsigned int loadTexture(char const *path);
@@ -168,38 +167,39 @@ auto se::Renderer::draw() -> void {
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LESS);
     glEnable(GL_CULL_FACE);
-    glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+    glClearColor(0.3f, 0.3f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    //MVP 구하기
-
-    glm::mat4 model = glm::mat4(1.0f);
-    model = glm::translate(model, glm::vec3(5.0f, 10.0f, 0.0f));
-    
     //텍스쳐
-    textureShader.activeShader();
-    textureShader.setInt("texture1", 0);
-    textureShader.setMat4("uView", camera.getViewMatrix());
-    textureShader.setMat4("uProj", camera.getProjectionMatrix());
-    textureShader.setMat4("uModel", glm::rotate(model, glm::radians(90.0f), glm::vec3(-1.0f, 0.0f, 0.0f)));
-    glBindVertexArray(testVAO);
-    glBindTexture(GL_TEXTURE_2D, testTexture);
-    glDrawArrays(GL_TRIANGLES, 0, 6);
-
-
-    model = glm::translate(model, glm::vec3(5.0f, 10.0f, -20.0f));
-    textureShader.setMat4("uModel", glm::rotate(model, glm::radians(90.0f), glm::vec3(-1.0f, 0.0f, 0.0f)));
-    glDrawArrays(GL_TRIANGLES, 0, 6);
-    glBindVertexArray(0);
+    drawTextures();
 
     //스태틱 메시
-    drawStaticMesh();
+    //drawStaticMesh();
 
     //스카이 박스
     drawSkybox();
 
     glfwSwapBuffers(window);
     glfwPollEvents();
+}
+
+void se::Renderer::drawTextures() {
+    glm::mat4 model = glm::mat4(1.0f);
+
+    this->textureShader.activeShader();
+    this->textureShader.setInt("texture1", 0);
+    this->textureShader.setMat4("uView", camera.getViewMatrix());
+    this->textureShader.setMat4("uProj", camera.getProjectionMatrix());
+    glBindVertexArray(this->testVAO);
+    glBindTexture(GL_TEXTURE_2D, this->testTexture);
+
+    for (int i = 0; i < 5; ++i) {
+        model = glm::translate(model, glm::vec3(5.0f, 10.0f, -10 * i));
+        this->textureShader.setMat4("uModel", glm::rotate(model, glm::radians(90.0f), glm::vec3(-1.0f, 0.0f, 0.0f)));
+        glDrawArrays(GL_TRIANGLES, 0, 6);
+    }
+
+    glBindVertexArray(0);
 }
 
 void se::Renderer::drawSkybox() {
@@ -216,25 +216,25 @@ void se::Renderer::drawSkybox() {
     glDepthFunc(GL_LESS);
 }
 
-void se::Renderer::drawStaticMesh() {
+void se::Renderer::drawStaticMesh(EntityDB &edb) {
     // --- example ---
-    EntityDB edb;
 
-    edb.addSystem([this]() -> void {
-                      //MVP,계산은 역순
-                      this->staticMeshShader.activeShader();
-                      this->staticMeshShader.setMat4("uViewProj", camera.getProjectionMatrix() * camera.getViewMatrix());
+    edb.addRenderSystem(
+            [this]() -> void {
+                //MVP,계산은 역순
+                this->staticMeshShader.activeShader();
+                this->staticMeshShader.setMat4("uViewProj", camera.getProjectionMatrix() * camera.getViewMatrix());
 
-                      this->staticMeshShader.setFloat("uSpecPower", 128.0f);
-                      this->setLightUniforms(this->staticMeshShader);
-                  }, [this](se::TransformComponent &trans, se::StaticModelComponent &model) -> void {
-                      glm::mat4 transform = glm::translate(glm::mat4(1.0f), trans.position);
-                      // quaternion 어케 쓰지?
-                      transform = glm::rotate(transform, glm::radians(0.0f), glm::vec3(1.0f, 1.0f, 1.0f));
-                      transform = glm::scale(transform, trans.scale);
-                      this->staticMeshShader.setMat4("uWorldTransform", transform);
-                      model.model->draw(this->staticMeshShader);
-                  }
+                this->staticMeshShader.setFloat("uSpecPower", 128.0f);
+                this->setLightUniforms(this->staticMeshShader);
+            }, [this](se::TransformComponent &trans, se::StaticModelComponent &model) -> void {
+                glm::mat4 transform = glm::translate(glm::mat4(1.0f), trans.position);
+                // quaternion 어케 쓰지?
+                transform = glm::rotate(transform, glm::radians(0.0f), glm::vec3(1.0f, 1.0f, 1.0f));
+                transform = glm::scale(transform, trans.scale);
+                this->staticMeshShader.setMat4("uWorldTransform", transform);
+                model.model->draw(this->staticMeshShader);
+            }
     );
     // --- end example ---
 
@@ -309,13 +309,13 @@ auto se::Renderer::processInput(GLFWwindow *window) -> void {
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-        camera.processKeyboard(se::CameraMovement::FORWARD, 0.1667f);
+        camera.processKeyboard(se::CameraMovement::FORWARD, 16ms);
     if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-        camera.processKeyboard(se::CameraMovement::BACKWARD, 0.1667f);
+        camera.processKeyboard(se::CameraMovement::BACKWARD, 16ms);
     if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-        camera.processKeyboard(se::CameraMovement::LEFT, 0.1667f);
+        camera.processKeyboard(se::CameraMovement::LEFT, 16ms);
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-        camera.processKeyboard(se::CameraMovement::RIGHT, 0.1667f);
+        camera.processKeyboard(se::CameraMovement::RIGHT, 16ms);
 }
 
 unsigned int loadCubemap(std::vector<std::string> faces) {

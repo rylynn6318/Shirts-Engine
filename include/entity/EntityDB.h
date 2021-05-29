@@ -8,7 +8,6 @@
 #include <optional>
 #include <vector>
 #include <utility>
-#include <ranges>
 #include <range/v3/all.hpp>
 #include <boost/dynamic_bitset.hpp>
 #include "component/Component.h"
@@ -74,6 +73,11 @@ namespace se {
             systems.push_back(std::make_unique<System<Callable, InitCallable>>(this, callable, init_callable));
         }
 
+        template<typename Callable, typename InitCallable>
+        auto addRenderSystem(InitCallable init_callable, Callable callable) {
+            render_systems.push_back(std::make_unique<System<Callable, InitCallable>>(this, callable, init_callable));
+        }
+
         // TODO : 시스템 한번만 즉시 실행, 혹은 특정 시점(init() 등)에 실행할 수 있는 함수 하나 필요함
         template<typename Callable>
         auto visit(Callable callable) {
@@ -84,6 +88,7 @@ namespace se {
         }
 
         auto runAllSystems() -> void;
+        auto render() -> void;
 
     private:
         // ---- Utils ----
@@ -274,13 +279,19 @@ namespace se {
             virtual ~SystemBase() = default;
 
             virtual auto update(Entity &) -> void = 0;
+            virtual auto init() -> void = 0;
+            virtual auto terminate() -> void = 0;
         };
 
-        template<typename Callable, typename InitCallable = decltype(EMPTY_FUNC)>
+        template<typename Callable, typename InitCallable = void(*)(), typename TerminateCallable = void(*)()>
         class System : public SystemBase {
         public:
-            System(EntityDB *db, Callable callable, InitCallable init_callable) : callback(callable), init_callback(init_callable), db(db) {};
-            System(EntityDB *db, Callable callable) : System(db, callable, EMPTY_FUNC) {};
+            System(EntityDB *db, Callable callable, InitCallable init_callable, TerminateCallable terminate_callable)
+                : db(db), callback(callable), init_callback(init_callable), terminate_callback(terminate_callable) {};
+            System(EntityDB *db, Callable callable, InitCallable init_callable)
+                : System(db, callable, init_callable, EMPTY_FUNC) {};
+            System(EntityDB *db, Callable callable)
+                : System(db, callable, EMPTY_FUNC, EMPTY_FUNC) {};
 
             auto update(Entity &e) -> void override {
                 if (e.mask.size() > traits.mask.size())
@@ -289,23 +300,38 @@ namespace se {
                     e.mask.resize(traits.mask.size());
 
                 if (traits.mask.is_proper_subset_of(e.mask) || traits.mask == e.mask) {
-                    init_callback();
                     traits.apply(db, callback, e);
                 }
+            }
+
+            auto init() -> void override {
+                init_callback();
+            }
+
+            auto terminate() -> void override {
+                terminate_callback();
             }
 
         private:
             EntityDB *db;
             Callable callback;
             InitCallable init_callback;
+            TerminateCallable terminate_callback;
             EntityDB::system_traits<Callable> traits{};
         };
+
+        // Deduction guide
+//        template<typename Callable>
+//        System(EntityDB *db, Callable callable) -> System<Callable, void(*)(), void(*)()>;
+//        template<typename Callable, typename InitCallable>
+//        System(EntityDB *db, Callable callable, InitCallable init_callable) -> System<Callable, InitCallable, void(*)()>;
 
         // ---- Member var and func ----
         std::vector<Entity> entities;
         std::vector<Entity::ID> recycleEntities; //재활용될 엔티티들;
         std::vector<std::unique_ptr<ComponentVectorBase>> component_vectors;
         std::vector<std::unique_ptr<SystemBase>> systems;
+        std::vector<std::unique_ptr<SystemBase>> render_systems;
 
         template<component C>
         auto getComponentVector() -> ComponentVector<C> * {

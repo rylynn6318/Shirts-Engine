@@ -1,6 +1,7 @@
 #include "component/Component.h"
 #include "entity/EntityDB.h"
 #include "render/Renderer.h"
+#include "core/Game.h"
 
 struct PositionComponent : public se::Component<PositionComponent> {
     float x = 0.0f;
@@ -61,11 +62,11 @@ int main()
 
     se::Renderer renderer;
     renderer.init(1200,800);
-    while (true)
-    {
-        renderer.draw();
-    }
 
+    se::EntityDB db;
+
+    se::Game::Instance().init();
+    se::Game::Instance().run(db);
 
 	return 0;
 }
