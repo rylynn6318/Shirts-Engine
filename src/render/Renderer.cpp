@@ -224,34 +224,36 @@ void se::Renderer::drawStaticMesh(EntityDB &edb) {
                 //MVP,계산은 역순
                 this->staticMeshShader.activeShader();
                 this->staticMeshShader.setMat4("uViewProj", camera.getProjectionMatrix() * camera.getViewMatrix());
-
                 this->staticMeshShader.setFloat("uSpecPower", 128.0f);
                 this->setLightUniforms(this->staticMeshShader);
+                std::cout << "draw static mesh init \n";
             }, [this](se::TransformComponent &trans, se::StaticModelComponent &model) -> void {
                 glm::mat4 transform = glm::translate(glm::mat4(1.0f), trans.position);
                 // quaternion 어케 쓰지?
                 transform = glm::rotate(transform, glm::radians(0.0f), glm::vec3(1.0f, 1.0f, 1.0f));
                 transform = glm::scale(transform, trans.scale);
                 this->staticMeshShader.setMat4("uWorldTransform", transform);
-                model.model->draw(this->staticMeshShader);
+                //model.model->draw(this->staticMeshShader);
+                this->staticModel.draw(this->staticMeshShader);
+                //std::cout << "draw static mesh : " << (model.model) << " : " << &(this->staticModel) << "\n";
             }
     );
     // --- end example ---
-
-    //MVP,계산은 역순
-    this->staticMeshShader.activeShader();
-    this->staticMeshShader.setMat4("uViewProj", camera.getProjectionMatrix() * camera.getViewMatrix());
-
-    this->staticMeshShader.setFloat("uSpecPower", 128.0f);
-    this->setLightUniforms(this->staticMeshShader);
-    //TRS,트랜스폼 적용
-    for (auto i = 0; i < 10; i++) {
-        glm::mat4 transform = glm::translate(glm::mat4(1.0f), glm::vec3((float) i * 3, 0.0f, 0.0f));
-        transform = glm::rotate(transform, glm::radians(0.0f), glm::vec3(1.0f, 1.0f, 1.0f));
-        transform = glm::scale(transform, glm::vec3(1.0f, 1.0f, 1.0f));
-        this->staticMeshShader.setMat4("uWorldTransform", transform);
-        this->staticModel.draw(this->staticMeshShader);
-    }
+//
+//    //MVP,계산은 역순
+//    this->staticMeshShader.activeShader();
+//    this->staticMeshShader.setMat4("uViewProj", camera.getProjectionMatrix() * camera.getViewMatrix());
+//
+//    this->staticMeshShader.setFloat("uSpecPower", 128.0f);
+//    this->setLightUniforms(this->staticMeshShader);
+//    //TRS,트랜스폼 적용
+//    for (auto i = 0; i < 10; i++) {
+//        glm::mat4 transform = glm::translate(glm::mat4(1.0f), glm::vec3((float) i * 3, 0.0f, 0.0f));
+//        transform = glm::rotate(transform, glm::radians(0.0f), glm::vec3(1.0f, 1.0f, 1.0f));
+//        transform = glm::scale(transform, glm::vec3(1.0f, 1.0f, 1.0f));
+//        this->staticMeshShader.setMat4("uWorldTransform", transform);
+//        this->staticModel.draw(this->staticMeshShader);
+//    }
 }
 
 auto se::Renderer::setLightUniforms(se::Shader &shader, const sem::Matrix4 &viewMat) -> void {
@@ -305,7 +307,7 @@ unsigned int loadTexture(char const *path) {
     return textureID;
 }
 
-auto se::Renderer::processInput(GLFWwindow *window) -> void {
+auto se::processInput(GLFWwindow *window) -> void {
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)

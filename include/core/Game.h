@@ -1,7 +1,10 @@
 #pragma once
 
 #include <chrono>
+#include "glad/glad.h"
+#include "GLFW/glfw3.h"
 #include "entity/EntityDB.h"
+#include "render/Renderer.h"
 
 using namespace std::chrono_literals;
 
@@ -24,7 +27,7 @@ namespace se {
 
         auto init() -> bool;
 
-        auto run(EntityDB &db) -> void;
+        auto run(EntityDB &db, Renderer&) -> void;
 
         auto terminate() -> void;
 

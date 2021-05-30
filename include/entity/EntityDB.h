@@ -78,6 +78,14 @@ namespace se {
             render_systems.push_back(std::make_unique<System<Callable, InitCallable>>(this, callable, init_callable));
         }
 
+//        template<typename Renderer, typename Callable, typename InitCallable>
+//        auto addRenderSystem(Renderer* renderer, InitCallable init_callable, Callable callable) {
+//            render_systems.push_back(
+//                    std::make_unique<System<Callable, InitCallable>>(this,
+//                            [renderer, callable] {(renderer->*callable)();},
+//                            [renderer, init_callable] {(renderer->*init_callable)();}));
+//        }
+
         // TODO : 시스템 한번만 즉시 실행, 혹은 특정 시점(init() 등)에 실행할 수 있는 함수 하나 필요함
         template<typename Callable>
         auto visit(Callable callable) {

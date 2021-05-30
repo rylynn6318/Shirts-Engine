@@ -67,18 +67,18 @@ auto se::CameraComponent::getProjectionMatrix() const -> glm::mat4 {
     return projection;
 }
 
-auto se::CameraComponent::activeThisCamera() -> void {
-    last_camera = active_camera;
-    active_camera = this;
-}
-
-auto se::CameraComponent::activeCamera() -> se::CameraComponent & {
-    if (active_camera == nullptr)
-        active_camera = this;
-    return *active_camera;
-}
-
-se::CameraComponent::~CameraComponent() {
-    if (active_camera == this)
-        active_camera = last_camera;
-}
+//auto se::CameraComponent::activeThisCamera() -> void {
+//    last_camera = active_camera;
+//    active_camera = this;
+//}
+//
+//auto se::CameraComponent::activeCamera() -> se::CameraComponent & {
+//    if (active_camera == nullptr)
+//        active_camera = this;
+//    return *active_camera;
+//}
+//
+//se::CameraComponent::~CameraComponent() {
+//    if (active_camera == this)
+//        active_camera = last_camera;
+//}

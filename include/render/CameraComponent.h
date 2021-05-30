@@ -23,7 +23,7 @@ namespace se {
 
     class CameraComponent : public Component<CameraComponent> {
     public:
-        ~CameraComponent();
+        //~CameraComponent();
 
         explicit CameraComponent(glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f),
                                  float yaw = YAW, float pitch = PITCH);
@@ -42,9 +42,9 @@ namespace se {
 
         auto processMouseScroll(float yoffset) -> void;
 
-        auto activeThisCamera() -> void;
-
-        auto activeCamera() -> CameraComponent&;
+//        auto activeThisCamera() -> void;
+//
+//        auto activeCamera() -> CameraComponent&;
 
     public:
         glm::vec3 Position;
@@ -62,8 +62,8 @@ namespace se {
 
     private:
         // Todo : 전역적인 처리에 active_camera 사용하게 변경, position 컴포넌트 요구하는것 어떻게 구현할지 생각
-        static CameraComponent *active_camera;
-        static CameraComponent *last_camera;
+//        static CameraComponent *active_camera;
+//        static CameraComponent *last_camera;
 
         glm::mat4 projection = glm::perspective(glm::radians(FOV), (float) 1200 / (float) 800, 0.1f, 1000.0f);
         // TransformComponent& postion;

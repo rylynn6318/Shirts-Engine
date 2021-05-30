@@ -17,6 +17,8 @@ using namespace std::chrono_literals;
 
 namespace se
 {
+    auto processInput(GLFWwindow* window)->void;
+
 	class Renderer
 	{
 	public:
@@ -27,27 +29,29 @@ namespace se
 		auto terminate()->void;
 		auto setLightUniforms(se::Shader& shader, const sem::Matrix4& viewMat)->void;
 		auto setLightUniforms(se::Shader& shader)->void;
-		auto processInput(GLFWwindow* window)->void;
 
-        auto drawStaticMeshInit() -> void {
-            //MVP,계산은 역순
-            this->staticMeshShader.activeShader();
-            this->staticMeshShader.setMat4("uViewProj", renderer_camera.activeCamera().getProjectionMatrix() * renderer_camera.activeCamera().getViewMatrix());
-
-            this->staticMeshShader.setFloat("uSpecPower", 128.0f);
-            this->setLightUniforms(this->staticMeshShader);
-        };
-        auto drawStaticMesh(se::TransformComponent &trans, se::StaticModelComponent &model) -> void {
-            glm::mat4 transform = glm::translate(glm::mat4(1.0f), trans.position);
-            // quaternion 어케 쓰지?
-            transform = glm::rotate(transform, glm::radians(0.0f), glm::vec3(1.0f, 1.0f, 1.0f));
-            transform = glm::scale(transform, trans.scale);
-            this->staticMeshShader.setMat4("uWorldTransform", transform);
-            model.model->draw(this->staticMeshShader);
-        }
-
+//        auto drawStaticMeshInit() -> void {
+//            //MVP,계산은 역순
+//            se::Renderer::staticMeshShader.activeShader();
+//            staticMeshShader.setMat4("uViewProj", renderer_camera.activeCamera().getProjectionMatrix() * renderer_camera.activeCamera().getViewMatrix());
+//
+//            staticMeshShader.setFloat("uSpecPower", 128.0f);
+//            setLightUniforms(staticMeshShader);
+//        };
+//        auto drawStaticMesh(se::TransformComponent &trans, se::StaticModelComponent &model) -> void {
+//            glm::mat4 transform = glm::translate(glm::mat4(1.0f), trans.position);
+//            // quaternion 어케 쓰지?
+//            transform = glm::rotate(transform, glm::radians(0.0f), glm::vec3(1.0f, 1.0f, 1.0f));
+//            transform = glm::scale(transform, trans.scale);
+//            staticMeshShader.setMat4("uWorldTransform", transform);
+//            model.model->draw(staticMeshShader);
+//        }
+        void drawStaticMesh(EntityDB &edb);
+        void drawSkybox();
+        void drawTextures();
+        GLFWwindow* window;
+        StaticModel staticModel;
 	private:
-		GLFWwindow* window;
 		Shader textureShader;
 		Shader staticMeshShader;
 		Shader skeletalMeshShader;
@@ -62,7 +66,6 @@ namespace se
 		GLuint skyboxVBO;
 		GLuint skyboxTexture;
 
-		StaticModel staticModel;
 
 		sem::Matrix4 view;
 		sem::Matrix4 projection;
@@ -71,8 +74,5 @@ namespace se
         CameraComponent renderer_camera{};
 
 		//CameraComponent camera{ glm::vec3(5.0f,5.0f,5.0f) };
-        void drawStaticMesh(EntityDB &edb);
-        void drawSkybox();
-        void drawTextures();
     };
 }
