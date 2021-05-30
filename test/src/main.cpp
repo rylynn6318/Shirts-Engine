@@ -63,10 +63,14 @@ int main() {
     se::Renderer renderer;
     renderer.init(1200, 800);
 
+    se::StaticModel staticModel;
+    staticModel.loadModel("../resource/model/GrassBlock/Grass_Block.obj");
+    // staticModel.loadModel("../resource/model/backpack/backpack.obj");
+
     se::EntityDB db;
     for (int i = 0; i < 10; ++i) {
         auto e = db.createEntity();
-        db.addComponent(e, se::TransformComponent{{(float)(i * 3), 0.0f, 0.0f}, {}, {}}, se::StaticModelComponent{&(renderer.staticModel)});
+        db.addComponent(e, se::TransformComponent{{(float)(i * 3), 0.0f, 0.0f}, {}, {}}, se::StaticModelComponent{&staticModel});
     }
 
     db.addSystem([](se::TransformComponent &trans) {

@@ -233,8 +233,8 @@ void se::Renderer::drawStaticMesh(EntityDB &edb) {
                 transform = glm::rotate(transform, glm::radians(0.0f), glm::vec3(1.0f, 1.0f, 1.0f));
                 transform = glm::scale(transform, trans.scale);
                 this->staticMeshShader.setMat4("uWorldTransform", transform);
-                //model.model->draw(this->staticMeshShader);
-                this->staticModel.draw(this->staticMeshShader);
+                model.model->draw(this->staticMeshShader);
+                //this->staticModel.draw(this->staticMeshShader);
                 //std::cout << "draw static mesh : " << (model.model) << " : " << &(this->staticModel) << "\n";
             }
     );
