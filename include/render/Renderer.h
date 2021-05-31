@@ -11,6 +11,7 @@
 #include "glm/gtc/matrix_transform.hpp"
 #include "glm/gtc/type_ptr.hpp"
 #include <component/StaticModelComponent.h>
+#include "core/input/Input.h"
 
 namespace sem = se::math;
 using namespace std::chrono_literals;

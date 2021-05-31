@@ -11,7 +11,7 @@ auto se::Game::init() -> bool {
 auto se::Game::run(se::EntityDB &db, Renderer& r) -> void {
     auto previous = std::chrono::system_clock::now();
     auto lag = 0ms;
-    while (isRunning) {
+    while (!glfwWindowShouldClose(r.window)) {
         auto current = std::chrono::system_clock::now();
         auto elasped = current - previous;
         previous = current;

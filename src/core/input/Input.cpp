@@ -1,6 +1,12 @@
 #include "core/input/Input.h"
 #include "GLFW/glfw3.h"
 
+namespace se::Input{
+    std::unordered_map<Key, KeyState> keymap{};
+    int mouse_x{};
+    int mouse_y{};
+}
+
 auto se::Input::saveKeymap(se::Key key, se::ButtonState state) -> void {
 	// std::map []로 접근하면, 키가 없으면 만들고 있으면 그걸 씀
 	// https://en.cppreference.com/w/cpp/container/map/operator_at
@@ -31,7 +37,12 @@ auto se::Input::saveKeymap(se::Key key, se::ButtonState state) -> void {
 	}
 }
 
-se::Input::Input() {
+//se::Input::Input() {
+//	for (auto key : se::Key()) {
+//		keymap[key] = se::KeyState::DEFAULT;
+//	}
+//}
+auto se::Input::initInput() -> void {
 	for (auto key : se::Key()) {
 		keymap[key] = se::KeyState::DEFAULT;
 	}

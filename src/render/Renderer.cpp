@@ -22,19 +22,19 @@ namespace se {
     }
 
     void mouse_callback(GLFWwindow *window, double xpos, double ypos) {
-        if (firstMouse) {
-            lastX = xpos;
-            lastY = ypos;
-            firstMouse = false;
-        }
-
-        float xoffset = xpos - lastX;
-        float yoffset = lastY - ypos;
-
-        lastX = xpos;
-        lastY = ypos;
-
-        camera.processMouseMovement(xoffset, yoffset);
+//        if (firstMouse) {
+//            lastX = xpos;
+//            lastY = ypos;
+//            firstMouse = false;
+//        }
+//
+//        float xoffset = xpos - lastX;
+//        float yoffset = lastY - ypos;
+//
+//        lastX = xpos;
+//        lastY = ypos;
+//
+//        camera.processMouseMovement(xoffset, yoffset);
     }
 }
 
@@ -112,6 +112,8 @@ auto se::Renderer::init(int SCR_WIDTH, int SCR_HEIGHT) -> bool {
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
     glfwSetCursorPosCallback(window, mouse_callback);
     //glfwSetScrollCallback(window, scroll_callback);
+    Input::initInput();
+    glfwSetKeyCallback(window, Input::key_callback);
 
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
@@ -158,6 +160,8 @@ auto se::Renderer::init(int SCR_WIDTH, int SCR_HEIGHT) -> bool {
             };
     skyboxTexture = loadCubemap(faces);
 
+
+
     return true;
 }
 
@@ -177,7 +181,7 @@ auto se::Renderer::draw() -> void {
     //drawStaticMesh();
 
     //스카이 박스
-    drawSkybox();
+    // drawSkybox();
 
     glfwSwapBuffers(window);
     glfwPollEvents();
@@ -342,6 +346,8 @@ unsigned int se::loadTexture(char const *path) {
 auto se::processInput(GLFWwindow *window) -> void {
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
+    if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS)
+        glfwTerminate();
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
         camera.processKeyboard(se::CameraMovement::FORWARD, 16ms);
     if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
@@ -350,6 +356,15 @@ auto se::processInput(GLFWwindow *window) -> void {
         camera.processKeyboard(se::CameraMovement::LEFT, 16ms);
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
         camera.processKeyboard(se::CameraMovement::RIGHT, 16ms);
+
+    if (glfwGetKey(window, GLFW_KEY_J) == GLFW_PRESS)
+        camera.processMouseMovement(-20, 0);
+    if (glfwGetKey(window, GLFW_KEY_L) == GLFW_PRESS)
+        camera.processMouseMovement(20, 0);
+    if (glfwGetKey(window, GLFW_KEY_I) == GLFW_PRESS)
+        camera.processMouseMovement(0, 20);
+    if (glfwGetKey(window, GLFW_KEY_K) == GLFW_PRESS)
+        camera.processMouseMovement(0, -20);
 }
 
 unsigned int loadCubemap(std::vector<std::string> faces) {
