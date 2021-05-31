@@ -35,6 +35,7 @@ file(COPY "${PROJECT_SOURCE_DIR}/resource" DESTINATION ${CMAKE_BINARY_DIR})
 
 # Conan setup
 include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
+set(CONAN_DISABLE_CHECK_COMPILER 1)
 conan_basic_setup()
 
 # ---------------------------------------------------------------------------------------- #
@@ -69,7 +70,7 @@ set(ENGINE_SOURCE_FILES
         "${ENGINE_SOURCE_DIR}/render/StaticModel.cpp"
         "${ENGINE_SOURCE_DIR}/core/input/Input.cpp"
         "${ENGINE_SOURCE_DIR}/core/input/Key.cpp"
-        include/component/StaticModelComponent.h)
+        include/component/StaticModelComponent.h src/component/TextureComponent.cpp include/component/TextureComponent.h)
 
 # debug
 if(!WIN32)

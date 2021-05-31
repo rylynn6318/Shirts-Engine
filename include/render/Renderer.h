@@ -18,6 +18,7 @@ using namespace std::chrono_literals;
 namespace se
 {
     auto processInput(GLFWwindow* window)->void;
+    unsigned int loadTexture(char const *path);
 
 	class Renderer
 	{
@@ -51,6 +52,7 @@ namespace se
         void drawTextures();
         GLFWwindow* window;
         StaticModel staticModel;
+        void drawTextures(EntityDB &db);
 	private:
 		Shader textureShader;
 		Shader staticMeshShader;

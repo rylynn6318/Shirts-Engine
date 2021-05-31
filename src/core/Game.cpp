@@ -1,6 +1,8 @@
 #include <render/CameraComponent.h>
 #include "core/Game.h"
 
+//static std::chrono::milliseconds delta_time{};
+
 auto se::Game::init() -> bool {
 
     return true;
@@ -29,7 +31,7 @@ auto se::Game::run(se::EntityDB &db, Renderer& r) -> void {
         glClearColor(0.3f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         r.drawSkybox();
-        r.drawTextures();
+        //r.drawTextures();
 
         db.render();
 
@@ -40,3 +42,7 @@ auto se::Game::run(se::EntityDB &db, Renderer& r) -> void {
 
 auto se::Game::terminate() -> void {
 }
+
+//auto se::Game::deltaTime() -> std::chrono::milliseconds {
+//    return delta_time;
+//}

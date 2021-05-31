@@ -31,10 +31,8 @@ namespace se {
 
         auto terminate() -> void;
 
-        [[nodiscard]]
-        static auto deltaTime() {
-            return delta_time;
-        }
+//        [[nodiscard]]
+//        static auto deltaTime() -> std::chrono::milliseconds;
 
         constexpr static auto MS_PER_UPDATE = 16ms;
 
@@ -43,7 +41,7 @@ namespace se {
 
         ~Game() = default;
 
-        static std::chrono::milliseconds delta_time;
+//        static std::chrono::milliseconds delta_time;
 
         bool isRunning = true;
     };

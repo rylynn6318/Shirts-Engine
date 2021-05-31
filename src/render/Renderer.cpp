@@ -3,9 +3,9 @@
 #include <vector>
 #include <chrono>
 #include <entity/EntityDB.h>
+#include <component/TextureComponent.h>
 #include "stb_image.h"
 
-unsigned int loadTexture(char const *path);
 
 unsigned int loadCubemap(std::vector<std::string> faces);
 
@@ -184,22 +184,54 @@ auto se::Renderer::draw() -> void {
 }
 
 void se::Renderer::drawTextures() {
-    glm::mat4 model = glm::mat4(1.0f);
-
     this->textureShader.activeShader();
     this->textureShader.setInt("texture1", 0);
     this->textureShader.setMat4("uView", camera.getViewMatrix());
     this->textureShader.setMat4("uProj", camera.getProjectionMatrix());
-    glBindVertexArray(this->testVAO);
-    glBindTexture(GL_TEXTURE_2D, this->testTexture);
 
     for (int i = 0; i < 5; ++i) {
+        glm::mat4 model = glm::mat4(1.0f);
+        glBindVertexArray(this->testVAO);
+        glBindTexture(GL_TEXTURE_2D, this->testTexture);
         model = glm::translate(model, glm::vec3(5.0f, 10.0f, -10 * i));
         this->textureShader.setMat4("uModel", glm::rotate(model, glm::radians(90.0f), glm::vec3(-1.0f, 0.0f, 0.0f)));
         glDrawArrays(GL_TRIANGLES, 0, 6);
+        glBindVertexArray(0);
     }
+}
 
-    glBindVertexArray(0);
+void se::Renderer::drawTextures(EntityDB& db) {
+    db.addRenderSystem(
+            [this]() -> void {
+                this->textureShader.activeShader();
+                this->textureShader.setInt("texture1", 0);
+                this->textureShader.setMat4("uView", camera.getViewMatrix());
+                this->textureShader.setMat4("uProj", camera.getProjectionMatrix());
+            },
+            [this](TransformComponent &trans, TextureComponent &tex) -> void {
+                GLuint vbo;
+
+                glGenVertexArrays(1, &tex.vao);
+                glGenBuffers(1, &vbo);
+                glBindVertexArray(tex.vao);
+                glBindBuffer(GL_ARRAY_BUFFER, vbo);
+                glBufferData(GL_ARRAY_BUFFER, sizeof(planeVertices), &planeVertices, GL_STATIC_DRAW);
+                glEnableVertexAttribArray(0);
+                glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void *) 0);
+                glEnableVertexAttribArray(1);
+                glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void *) (3 * sizeof(float)));
+                glBindVertexArray(0);
+
+                glBindVertexArray(tex.vao);
+                glBindTexture(GL_TEXTURE_2D, tex.texture);
+                glm::mat4 model = glm::mat4(1.0f);
+                model = glm::translate(model, trans.position);
+                this->textureShader.setMat4("uModel", glm::rotate(model, glm::radians(90.0f),
+                                                                  glm::vec3(-1.0f, 0.0f, 0.0f)));
+                glDrawArrays(GL_TRIANGLES, 0, 6);
+                glBindVertexArray(0);
+            }
+    );
 }
 
 void se::Renderer::drawSkybox() {
@@ -274,7 +306,7 @@ auto se::Renderer::setLightUniforms(se::Shader &shader) -> void {
     shader.setVec3("uDirLight.specColor", glm::vec3(0.5f, 1.0f, 0.5f));
 }
 
-unsigned int loadTexture(char const *path) {
+unsigned int se::loadTexture(char const *path) {
     unsigned int textureID;
     glGenTextures(1, &textureID);
 
